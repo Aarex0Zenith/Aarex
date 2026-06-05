@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAREX — Ethical Hacker | Builder | Researcher</title>
+<meta name="description" content="AAREX — Ethical Hacker, Cybersecurity Researcher, Philosophy Lover, and Self-Improvement focused student.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #00ff41;
+  --green-dim: #00cc33;
+  --green-glow: rgba(0,255,65,0.15);
+  --green-faint: rgba(0,255,65,0.05);
+  --black: #000000;
+  --dark: #050505;
+  --dark2: #0a0a0a;
+  --dark3: #111;
+  --glass: rgba(0,255,65,0.04);
+  --glass-border: rgba(0,255,65,0.15);
+  --cream: #f5f0e8;
+  --cream2: #ede8dc;
+  --brown: #5c3d2e;
+  --brown-light: #8b6b4a;
+  --paper: #f9f4e8;
+  --ink: #2c1810;
+  --warm-accent: #c9963d;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--green);
+  font-family: 'Share Tech Mono', monospace;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  width: 20px; height: 20px;
+  border: 1px solid var(--green);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transition: transform 0.1s, border-color 0.2s;
+  mix-blend-mode: difference;
+}
+#cursor-dot {
+  width: 4px; height: 4px;
+  background: var(--green);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+}
+
+/* ── LOADING SCREEN ── */
+#loader {
+  position: fixed; inset: 0;
+  background: #000;
+  z-index: 10000;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace;
+}
+#loader-logo {
+  font-size: clamp(3rem,10vw,7rem);
+  font-weight: 900;
+  color: var(--green);
+  letter-spacing: 0.3em;
+  text-shadow: 0 0 40px var(--green), 0 0 80px var(--green-dim);
+  animation: pulse-glow 1s ease-in-out infinite alternate;
+}
+#loader-bar-wrap {
+  width: 300px; height: 2px;
+  background: rgba(0,255,65,0.1);
+  margin-top: 40px; position: relative; overflow: hidden;
+}
+#loader-bar {
+  height: 100%; background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: load-bar 2.5s ease-in-out forwards;
+}
+#loader-text {
+  margin-top: 20px;
+  font-size: 0.75rem;
+  color: var(--green-dim);
+  letter-spacing: 0.2em;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes load-bar { from{width:0} to{width:100%} }
+@keyframes blink { 50%{opacity:0} }
+@keyframes pulse-glow {
+  from { text-shadow: 0 0 30px var(--green); }
+  to   { text-shadow: 0 0 60px var(--green), 0 0 100px var(--green-dim); }
+}
+
+/* ── MATRIX CANVAS ── */
+#matrix-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0; opacity: 0.07; pointer-events: none;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000; padding: 20px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--glass-border);
+}
+.nav-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.4rem; font-weight: 900;
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green);
+  letter-spacing: 0.2em;
+}
+.nav-links { display: flex; gap: 30px; list-style: none; }
+.nav-links a {
+  color: rgba(0,255,65,0.7); text-decoration: none;
+  font-size: 0.75rem; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+.nav-links a:hover {
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green);
+}
+.nav-right { display: flex; align-items: center; gap: 15px; }
+.lang-btn, .music-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--green-dim);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem; padding: 6px 12px;
+  cursor: none; border-radius: 2px;
+  transition: all 0.2s; letter-spacing: 0.1em;
+}
+.lang-btn:hover, .music-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-faint);
+}
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; background: none; border: none; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--green); transition: all 0.3s; }
+
+/* ── SECTIONS BASE ── */
+section { position: relative; z-index: 1; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 100px 20px 60px;
+  position: relative; overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content { position: relative; z-index: 2; max-width: 900px; }
+.hero-logo-img {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  box-shadow: 0 0 40px var(--green-glow), inset 0 0 40px rgba(0,0,0,0.5);
+  margin-bottom: 30px;
+  object-fit: cover;
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px var(--green));
+}
+@keyframes float {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)}
+}
+.hero-name {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(3.5rem,12vw,8rem);
+  font-weight: 900;
+  color: var(--green);
+  letter-spacing: 0.3em;
+  text-shadow: 0 0 60px var(--green), 0 0 120px rgba(0,255,65,0.3);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: clamp(0.75rem,2vw,1rem);
+  color: rgba(0,255,65,0.6);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+#typed-text {
+  font-size: clamp(0.9rem,2.5vw,1.2rem);
+  color: var(--green);
+  min-height: 2em;
+  margin-bottom: 40px;
+}
+.typed-cursor { animation: blink 0.7s step-end infinite; }
+.hero-btns { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  padding: 14px 36px;
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem; letter-spacing: 0.2em;
+  text-transform: uppercase; cursor: none;
+  text-decoration: none;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--green);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+.btn-primary:hover::before { transform: translateX(0); }
+.btn-primary:hover { color: #000; }
+.btn-primary span { position: relative; z-index: 1; }
+.btn-secondary {
+  padding: 14px 36px;
+  background: var(--green-faint);
+  border: 1px solid var(--glass-border);
+  color: rgba(0,255,65,0.6);
+  font-family: 'Orbitron', monospace;
+  font-size: 0.8rem; letter-spacing: 0.2em;
+  text-transform: uppercase; cursor: none;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.btn-secondary:hover { border-color: var(--green); color: var(--green); }
+
+/* ── SECTION COMMON ── */
+.section-inner { max-width: 1100px; margin: 0 auto; padding: 100px 40px; }
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem,5vw,3rem);
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.2em;
+  margin-bottom: 10px;
+  text-shadow: 0 0 30px var(--green-glow);
+}
+.section-line {
+  width: 80px; height: 2px;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  margin-bottom: 50px;
+}
+.section-tag {
+  font-size: 0.7rem; color: var(--green-dim);
+  letter-spacing: 0.3em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* ── ABOUT ── */
+#about { background: var(--dark); }
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+}
+.about-img-wrap {
+  position: relative;
+}
+.about-img {
+  width: 100%; max-width: 420px;
+  border: 1px solid var(--glass-border);
+  filter: grayscale(20%) contrast(1.1);
+  box-shadow: 0 0 40px rgba(0,255,65,0.1);
+}
+.about-img-corner {
+  position: absolute; width: 30px; height: 30px;
+  border-color: var(--green); border-style: solid;
+}
+.about-img-corner.tl { top: -10px; left: -10px; border-width: 2px 0 0 2px; }
+.about-img-corner.tr { top: -10px; right: -10px; border-width: 2px 2px 0 0; }
+.about-img-corner.bl { bottom: -10px; left: -10px; border-width: 0 0 2px 2px; }
+.about-img-corner.br { bottom: -10px; right: -10px; border-width: 0 2px 2px 0; }
+.about-text p {
+  color: rgba(0,255,65,0.7); line-height: 1.9;
+  font-size: 0.9rem; margin-bottom: 20px;
+}
+.about-stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 20px; margin-top: 30px;
+}
+.stat-box {
+  border: 1px solid var(--glass-border);
+  padding: 20px 15px; text-align: center;
+  background: var(--glass);
+  backdrop-filter: blur(5px);
+}
+.stat-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.8rem; font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 20px var(--green);
+}
+.stat-label { font-size: 0.65rem; color: var(--green-dim); letter-spacing: 0.15em; margin-top: 4px; }
+
+/* ── SKILLS ── */
+#skills { background: var(--black); }
+.skills-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+  gap: 20px;
+}
+.skill-card {
+  border: 1px solid var(--glass-border);
+  padding: 25px; background: var(--glass);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s; position: relative; overflow: hidden;
+}
+.skill-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: var(--green);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s;
+}
+.skill-card:hover::before { transform: scaleX(1); }
+.skill-card:hover { border-color: var(--green); box-shadow: 0 0 20px rgba(0,255,65,0.08); }
+.skill-icon { font-size: 1.5rem; margin-bottom: 10px; }
+.skill-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.85rem; color: var(--green); margin-bottom: 8px; letter-spacing: 0.1em;
+}
+.skill-bar-wrap {
+  height: 2px; background: rgba(0,255,65,0.1);
+}
+.skill-bar {
+  height: 100%; background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  transition: width 1.5s ease-out; width: 0;
+}
+.skill-label { font-size: 0.65rem; color: var(--green-dim); margin-top: 5px; }
+
+/* ── JOURNEY ── */
+#journey { background: var(--dark); }
+.journey-timeline { position: relative; padding-left: 30px; }
+.journey-timeline::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 1px; background: linear-gradient(to bottom, transparent, var(--green), transparent);
+}
+.journey-step {
+  position: relative; margin-bottom: 50px; padding-left: 30px;
+  opacity: 0; transform: translateX(-20px);
+  transition: all 0.6s ease;
+}
+.journey-step.visible { opacity: 1; transform: translateX(0); }
+.journey-dot {
+  position: absolute; left: -35px; top: 5px;
+  width: 12px; height: 12px;
+  border: 2px solid var(--green); border-radius: 50%;
+  background: var(--black);
+  box-shadow: 0 0 10px var(--green);
+}
+.journey-step-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem; color: var(--green-dim);
+  letter-spacing: 0.3em; margin-bottom: 5px;
+}
+.journey-step-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem; color: var(--green);
+  margin-bottom: 10px; letter-spacing: 0.1em;
+}
+.journey-step p {
+  color: rgba(0,255,65,0.65); font-size: 0.875rem; line-height: 1.8;
+}
+.journey-step ul {
+  color: rgba(0,255,65,0.65); font-size: 0.875rem;
+  line-height: 1.8; padding-left: 20px; margin-top: 8px;
+}
+
+/* ── LIBRARY ── */
+#library { background: var(--black); }
+.library-intro {
+  text-align: center; max-width: 600px; margin: 0 auto 60px;
+  color: rgba(0,255,65,0.6); font-size: 0.9rem; line-height: 1.8;
+}
+.books-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+  gap: 30px;
+}
+.book-card {
+  position: relative; cursor: none;
+  border: 1px solid var(--glass-border);
+  overflow: hidden; transition: all 0.4s;
+  background: var(--dark2);
+}
+.book-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.book-cover {
+  height: 280px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 30px; position: relative; overflow: hidden;
+}
+.book-cover-1 {
+  background: linear-gradient(135deg, #1a0e06 0%, #2d1810 50%, #1a0e06 100%);
+  border-bottom: 1px solid rgba(201,150,61,0.3);
+}
+.book-cover-2 {
+  background: linear-gradient(135deg, #0d1a0d 0%, #0a2010 50%, #061006 100%);
+  border-bottom: 1px solid rgba(0,255,65,0.2);
+}
+.book-cover-3 {
+  background: linear-gradient(135deg, #000510 0%, #000d1a 50%, #000510 100%);
+  border-bottom: 1px solid rgba(0,100,255,0.3);
+}
+.book-cover-img {
+  width: 90px; height: 90px; object-fit: cover;
+  border-radius: 50%; margin-bottom: 20px;
+  opacity: 0.85;
+}
+.book-cover-1 .book-cover-img { border: 2px solid var(--warm-accent); box-shadow: 0 0 20px rgba(201,150,61,0.3); filter: sepia(30%); }
+.book-cover-2 .book-cover-img { border: 2px solid #888; box-shadow: 0 0 20px rgba(0,0,0,0.5); filter: grayscale(50%); }
+.book-cover-3 .book-cover-img { border: 2px solid #0055ff; box-shadow: 0 0 20px rgba(0,100,255,0.4); filter: brightness(0.9) saturate(1.2); }
+.book-title-en {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; text-align: center; line-height: 1.3;
+}
+.book-cover-1 .book-title-en { color: var(--warm-accent); }
+.book-cover-2 .book-title-en { color: #ccc; }
+.book-cover-3 .book-title-en { color: #4488ff; text-shadow: 0 0 20px rgba(68,136,255,0.5); }
+.book-cover-sub {
+  font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+  margin-top: 8px; text-align: center;
+}
+.book-cover-1 .book-cover-sub { color: rgba(201,150,61,0.6); }
+.book-cover-2 .book-cover-sub { color: rgba(200,200,200,0.5); }
+.book-cover-3 .book-cover-sub { color: rgba(68,136,255,0.6); }
+.book-info { padding: 20px 25px 25px; }
+.book-info p { font-size: 0.8rem; color: rgba(0,255,65,0.5); line-height: 1.7; margin-bottom: 15px; }
+.book-open-btn {
+  display: inline-block; padding: 10px 24px;
+  font-family: 'Orbitron', monospace; font-size: 0.7rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  text-decoration: none; cursor: none;
+  transition: all 0.2s;
+}
+.book-card:nth-child(1) .book-open-btn { border: 1px solid var(--warm-accent); color: var(--warm-accent); }
+.book-card:nth-child(1) .book-open-btn:hover { background: var(--warm-accent); color: #000; }
+.book-card:nth-child(2) .book-open-btn { border: 1px solid #888; color: #aaa; }
+.book-card:nth-child(2) .book-open-btn:hover { background: #888; color: #000; }
+.book-card:nth-child(3) .book-open-btn { border: 1px solid #4488ff; color: #4488ff; }
+.book-card:nth-child(3) .book-open-btn:hover { background: #4488ff; color: #000; }
+
+/* ── BOOK OVERLAY ── */
+#book-overlay {
+  position: fixed; inset: 0; z-index: 5000;
+  display: none; opacity: 0;
+  transition: opacity 0.4s;
+  overflow-y: auto;
+}
+#book-overlay.open { display: flex; }
+#book-overlay.visible { opacity: 1; }
+
+/* BOOK 1 — Philosophy */
+#book-overlay.book-1 {
+  background: var(--paper);
+  font-family: 'EB Garamond', serif;
+  color: var(--ink);
+}
+/* BOOK 2 — Focus */
+#book-overlay.book-2 {
+  background: #f2ede0;
+  font-family: 'EB Garamond', serif;
+  color: #1a1a1a;
+}
+/* BOOK 3 — Hacker */
+#book-overlay.book-3 {
+  background: #000510;
+  font-family: 'Share Tech Mono', monospace;
+  color: #00cc44;
+}
+
+.book-wrapper {
+  max-width: 780px; margin: 0 auto;
+  padding: 80px 60px; position: relative;
+  min-height: 100vh;
+}
+.book-close {
+  position: fixed; top: 30px; right: 40px;
+  background: transparent; border: none;
+  font-size: 1.5rem; cursor: none;
+  z-index: 100; padding: 10px;
+  transition: all 0.2s;
+}
+#book-overlay.book-1 .book-close,
+#book-overlay.book-2 .book-close { color: var(--brown); }
+#book-overlay.book-3 .book-close { color: var(--green); border: 1px solid var(--green); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', monospace; font-size: 0.8rem; }
+#book-overlay.book-3 .book-close:hover { background: var(--green); color: #000; }
+
+.book-title-page { text-align: center; padding: 80px 0; border-bottom: 1px solid; margin-bottom: 60px; }
+#book-overlay.book-1 .book-title-page, #book-overlay.book-2 .book-title-page { border-color: rgba(92,61,46,0.2); }
+#book-overlay.book-3 .book-title-page { border-color: rgba(0,255,65,0.2); }
+.book-main-title {
+  font-size: clamp(2rem,5vw,3.5rem);
+  font-weight: 700;
+  line-height: 1.2; margin-bottom: 20px;
+}
+#book-overlay.book-1 .book-main-title { font-family: 'Playfair Display', serif; color: var(--brown); font-style: italic; }
+#book-overlay.book-2 .book-main-title { font-family: 'Playfair Display', serif; color: #3d2b1a; }
+#book-overlay.book-3 .book-main-title { font-family: 'Orbitron', monospace; color: var(--green); letter-spacing: 0.1em; font-size: clamp(1.5rem,4vw,2.5rem); text-shadow: 0 0 30px var(--green); }
+.book-author { font-size: 1rem; opacity: 0.6; letter-spacing: 0.15em; }
+#book-overlay.book-3 .book-author { font-family: 'Share Tech Mono'; color: var(--green-dim); }
+
+.book-chapter { margin-bottom: 70px; }
+.chapter-heading {
+  font-size: clamp(1.3rem,3vw,2rem);
+  font-weight: 700; margin-bottom: 5px;
+  padding-bottom: 15px; border-bottom: 1px solid;
+}
+#book-overlay.book-1 .chapter-heading { font-family: 'Playfair Display', serif; color: var(--brown); border-color: rgba(92,61,46,0.15); }
+#book-overlay.book-2 .chapter-heading { font-family: 'Playfair Display', serif; color: #3d2b1a; border-color: rgba(61,43,26,0.15); }
+#book-overlay.book-3 .chapter-heading { font-family: 'Orbitron', monospace; color: var(--green); border-color: rgba(0,255,65,0.2); letter-spacing: 0.1em; font-size: 1.1rem; text-transform: uppercase; }
+.chapter-num { font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.5; margin-bottom: 8px; display: block; }
+.book-p {
+  font-size: 1.1rem; line-height: 2;
+  margin-bottom: 22px; text-align: justify;
+}
+#book-overlay.book-3 .book-p { font-family: 'Share Tech Mono'; font-size: 0.9rem; line-height: 1.9; color: rgba(0,204,68,0.85); }
+.book-quote {
+  margin: 30px 0; padding: 20px 30px;
+  border-left: 3px solid; font-style: italic;
+  font-size: 1.15rem; line-height: 1.8;
+}
+#book-overlay.book-1 .book-quote { border-color: var(--warm-accent); background: rgba(201,150,61,0.05); color: var(--brown); }
+#book-overlay.book-2 .book-quote { border-color: #8b7355; background: rgba(139,115,85,0.07); color: #3d2b1a; }
+#book-overlay.book-3 .book-quote { border-color: var(--green); background: var(--green-faint); color: var(--green); font-style: normal; font-family: 'Share Tech Mono'; font-size: 0.85rem; }
+.book-divider { text-align: center; margin: 40px 0; opacity: 0.3; font-size: 1.5rem; }
+.toc { margin-bottom: 60px; }
+.toc-title { font-size: 1.1rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px; opacity: 0.5; }
+.toc-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted; font-size: 0.95rem; opacity: 0.7; }
+#book-overlay.book-1 .toc-item, #book-overlay.book-2 .toc-item { border-color: rgba(92,61,46,0.2); }
+#book-overlay.book-3 .toc-item { border-color: rgba(0,255,65,0.15); }
+.book-progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--warm-accent); z-index: 200;
+  width: 0; transition: width 0.1s;
+}
+#book-overlay.book-3 .book-progress-bar { background: var(--green); box-shadow: 0 0 10px var(--green); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--dark); border-top: 1px solid var(--glass-border);
+  padding: 50px 40px; text-align: center;
+}
+footer p { color: rgba(0,255,65,0.4); font-size: 0.75rem; letter-spacing: 0.15em; }
+footer .footer-logo {
+  font-family: 'Orbitron', monospace; font-size: 1.5rem;
+  color: var(--green); letter-spacing: 0.3em;
+  text-shadow: 0 0 20px var(--green); margin-bottom: 15px;
+}
+.footer-links { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; }
+.footer-links a {
+  color: rgba(0,255,65,0.4); text-decoration: none;
+  font-size: 0.7rem; letter-spacing: 0.15em;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--green); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s, transform 0.7s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── GLITCH TEXT ── */
+.glitch {
+  position: relative;
+  animation: glitch-anim 5s infinite;
+}
+@keyframes glitch-anim {
+  0%,95%,100% { text-shadow: 0 0 60px var(--green), 0 0 120px rgba(0,255,65,0.3); }
+  96% { text-shadow: -2px 0 #ff0040, 2px 0 #00ffff; transform: skewX(-2deg); }
+  97% { text-shadow: 2px 0 #ff0040, -2px 0 #00ffff; transform: skewX(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .about-img { max-width: 100%; }
+}
+@media (max-width: 700px) {
+  nav { padding: 15px 20px; }
+  .nav-links { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.98); flex-direction: column; align-items: center; justify-content: center; gap: 30px; z-index: 999; }
+  .nav-links.open { display: flex; }
+  .nav-links a { font-size: 1rem; }
+  .hamburger { display: flex; z-index: 1000; }
+  .section-inner { padding: 70px 24px; }
+  .book-wrapper { padding: 60px 24px; }
+  .about-stats { grid-template-columns: repeat(3,1fr); }
+  .nav-right .lang-btn { display: none; }
+  .skills-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .skills-grid { grid-template-columns: 1fr; }
+  .about-stats { grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .stat-num { font-size: 1.3rem; }
+  .hero-btns { flex-direction: column; align-items: center; }
+}
+
+/* ── SCAN LINE EFFECT ── */
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+}
+/* Terminal blink for book 3 */
+.term-prompt::before { content: '> '; color: var(--green); }
+.term-prompt { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- Matrix Canvas -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- Loading Screen -->
+<div id="loader">
+  <div id="loader-logo">AAREX</div>
+  <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+  <div id="loader-text">INITIALIZING SYSTEM...</div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">AAREX</div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about" onclick="closeMenu()">About</a></li>
+    <li><a href="#skills" onclick="closeMenu()">Skills</a></li>
+    <li><a href="#journey" onclick="closeMenu()">Journey</a></li>
+    <li><a href="#library" onclick="closeMenu()">Library</a></li>
+  </ul>
+  <div class="nav-right">
+    <select class="lang-btn" id="lang-select" title="Language">
+      <option value="en">EN</option>
+      <option value="hi">HI</option>
+      <option value="ar">AR</option>
+      <option value="nl">NL</option>
+    </select>
+    <button class="music-btn" id="music-btn" title="Toggle Music">♪ OFF</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content reveal">
+    <!-- Pepe hacker frog logo - real image -->
+    <div style="display:flex;justify-content:center">
+      <div style="position:relative;width:170px;height:170px;margin-bottom:30px">
+        <img src="https://i.ibb.co/3mTH3tPg/logo-png.jpg"
+             alt="AAREX Logo"
+             style="width:170px;height:170px;border-radius:50%;border:2px solid var(--green);box-shadow:0 0 50px rgba(0,255,65,0.4),0 0 100px rgba(0,255,65,0.15);animation:float 4s ease-in-out infinite;object-fit:cover;display:block;">
+        <!-- Green glow ring -->
+        <div style="position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(0,255,65,0.3);animation:float 4s ease-in-out infinite;pointer-events:none;"></div>
+        <div style="position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(0,255,65,0.1);animation:float 4s ease-in-out infinite 0.5s;pointer-events:none;"></div>
+      </div>
+    </div>
+    <h1 class="hero-name glitch">AAREX</h1>
+    <p class="hero-sub">Ethical Hacker | Builder | Researcher</p>
+    <div id="typed-text"><span id="typed"></span><span class="typed-cursor">_</span></div>
+    <div class="hero-btns">
+      <a href="#library" class="btn-primary"><span>Enter Library</span></a>
+      <a href="#journey" class="btn-secondary">My Journey</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-tag">// about me</p>
+      <h2 class="section-title">WHO AM I</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-img-wrap reveal">
+        <!-- Real study notes photo -->
+        <div style="position:relative;overflow:hidden;border:1px solid rgba(0,255,65,0.2);">
+          <img src="https://i.ibb.co/SXQwdRRn/focus-png.jpg" alt="Study notes" style="width:100%;display:block;filter:brightness(0.85) contrast(1.1);object-fit:cover;">
+          <!-- Green scanline overlay -->
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.025) 3px,rgba(0,255,65,0.025) 4px);pointer-events:none;"></div>
+          <!-- Bottom label -->
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 15px;background:linear-gradient(transparent,rgba(0,0,0,0.85));font-family:'Share Tech Mono';font-size:0.65rem;color:rgba(0,255,65,0.6);letter-spacing:0.15em;">// AAREX :: STUDY SESSIONS</div>
+        </div>
+        <div class="about-img-corner tl"></div>
+        <div class="about-img-corner tr"></div>
+        <div class="about-img-corner bl"></div>
+        <div class="about-img-corner br"></div>
+      </div>
+      <div class="about-text reveal">
+        <p id="about-p1">Yaar, main ek aspiring ethical hacker aur cybersecurity researcher hoon — kisi IIT ya IIM ka naam nahi, bas ek determined student jo khud ko prove karna chahta hai. Mujhe system exploit karna utna hi exciting lagta hai jitna Stoic philosophy padhna.</p>
+        <p id="about-p2">My journey started from curiosity — why do systems break? How do networks communicate? What happens inside a Linux kernel? That curiosity became obsession, and obsession became a discipline I live by every single day.</p>
+        <p id="about-p3">I believe ethical hacking is not just a career — it's a mindset. The same patience that helps you sit through a 6-hour CTF challenge also helps you read Marcus Aurelius at 2 AM and emerge calmer, sharper.</p>
+        <p id="about-p4">Beyond the terminal, I write about philosophy, focus systems, and the raw journey of building yourself from nothing. If you're here, you're probably like me — driven, restless, and searching for something real.</p>
+        <div class="about-stats">
+          <div class="stat-box reveal">
+            <div class="stat-num">2+</div>
+            <div class="stat-label">YRS IN SEC</div>
+          </div>
+          <div class="stat-box reveal">
+            <div class="stat-num">50+</div>
+            <div class="stat-label">CTF SOLVES</div>
+          </div>
+          <div class="stat-box reveal">
+            <div class="stat-num">3</div>
+            <div class="stat-label">BOOKS WRITTEN</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-tag">// capabilities</p>
+      <h2 class="section-title">SKILLS</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card reveal" data-skill="85">
+        <div class="skill-icon">🐧</div>
+        <div class="skill-name">LINUX</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">Kali / Arch / Ubuntu / Bash</div>
+      </div>
+      <div class="skill-card reveal" data-skill="80">
+        <div class="skill-icon">🌐</div>
+        <div class="skill-name">NETWORKING</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">TCP/IP / Wireshark / Nmap</div>
+      </div>
+      <div class="skill-card reveal" data-skill="78">
+        <div class="skill-icon">🔒</div>
+        <div class="skill-name">WEB SECURITY</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">OWASP / Burp Suite / SQLi / XSS</div>
+      </div>
+      <div class="skill-card reveal" data-skill="75">
+        <div class="skill-icon">🔍</div>
+        <div class="skill-name">OSINT</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">Maltego / Shodan / theHarvester</div>
+      </div>
+      <div class="skill-card reveal" data-skill="82">
+        <div class="skill-icon">🐍</div>
+        <div class="skill-name">PYTHON</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">Scripting / Automation / Tools</div>
+      </div>
+      <div class="skill-card reveal" data-skill="65">
+        <div class="skill-icon">🎯</div>
+        <div class="skill-name">BUG BOUNTY</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">HackerOne / Bugcrowd / Reports</div>
+      </div>
+      <div class="skill-card reveal" data-skill="88">
+        <div class="skill-icon">🏴</div>
+        <div class="skill-name">CTFs</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">TryHackMe / HTB / PicoCTF</div>
+      </div>
+      <div class="skill-card reveal" data-skill="70">
+        <div class="skill-icon">🔬</div>
+        <div class="skill-name">CYBER RESEARCH</div>
+        <div class="skill-bar-wrap"><div class="skill-bar"></div></div>
+        <div class="skill-label">Threat Analysis / CVE Research</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section id="journey">
+  <div class="section-inner">
+    <div class="reveal">
+      <p class="section-tag">// roadmap</p>
+      <h2 class="section-title">THE JOURNEY</h2>
+      <div class="section-line"></div>
+      <p style="color:rgba(0,255,65,0.5);font-size:0.85rem;margin-bottom:50px;max-width:600px;">How to become an ethical hacker from absolute zero — the honest roadmap, no shortcuts, no bullshit.</p>
+    </div>
+    <div class="journey-timeline">
+      <div class="journey-step">
+        <div class="journey-dot"></div>
+        <div class="journey-step-num">STEP 01</div>
+        <div class="journey-step-title">LINUX FUNDAMENTALS</div>
+        <p>Start with Linux. Everything in cybersecurity runs on it. Learn file systems, permissions, bash scripting, process management, and networking commands. Kali Linux is your playground.</p>
+        <ul><li>Install Kali/Ubuntu in VirtualBox</li><li>Master: ls, grep, find, chmod, netstat, nmap</li><li>Write 10 bash scripts</li></ul>
+      </div>
+      <div class="journey-step">
+        <div class="journey-dot"></div>
+        <div class="journey-step-num">STEP 02</div>
+        <div class="journey-step-title">NETWORKING DEEP DIVE</div>
+        <p>Without networking knowledge, you're blind. TCP/IP, OSI model, DNS, HTTP/HTTPS, ARP, routing — these are the bones of every hack.</p>
+        <ul><li>CompTIA Network+ as reference</li><li>Practice with Wireshark & Packet Tracer</li><li>Understand how websites actually work</li></ul>
+      </div>
+      <div class="journey-step">
+        <div class="journey-dot"></div>
+        <div class="journey-step-num">STEP 03</div>
+        <div class="journey-step-title">PROGRAMMING</div>
+        <p>Python is your weapon. Start simple — automate tasks, write port scanners, build tools. Then touch JavaScript to understand web exploitation.</p>
+        <ul><li>Python: requests, socket, subprocess, scapy</li><li>Build 5 security tools from scratch</li><li>Read others' exploit code on GitHub</li></ul>
+      </div>
+      <div class="journey-step">
+        <div class="journey-dot"></div>
+        <div class="journey-step-num">STEP 04</div>
+        <div class="journey-step-title">WEB SECURITY</div>
+        <p>OWASP Top 10 is your bible. Learn each vulnerability category: SQLi, XSS, IDOR, SSRF, CSRF, file upload bypasses. Practice on DVWA and PortSwigger Labs.</p>
+        <ul><li>Set up Burp Suite Pro workflow</li><li>Complete all PortSwigger Web Security Academy labs</li><li>Read every HackerOne disclosed report</li></ul>
+      </div>
+      <div class="journey-step">
+        <div class="journey-dot"></div>
+        <div class="journey-step-num">STEP 05</div>
+        <div class="journey-step-title">CTF PRACTICE</div>
+        <p>CTFs (Capture The Flag) are where theory becomes skill. Solve challenges in web, crypto, forensics, pwn, reverse engineering. Lose often. Learn every time.</p>
+        <ul><li>TryHackMe — 100 rooms minimum</li><li>HackTheBox — 20+ machines</li><li>PicoCTF, CTFtime.org weekly</li></ul>
+      </div>
+      <div class="journey-step">
+        <div class="journey-dot"></div>
+        <div class="journey-step-num">STEP 06</div>
+        <div class="journey-step-title">BUG BOUNTY</div>
+        <p>Turn your skills into real impact and money. Start with private programs, read scope carefully, report responsibly. One good P1 changes your whole resume.</p>
+        <ul><li>HackerOne, Bugcrowd, Intigriti accounts</li><li>Focus on one target for 30 days</li><li>Document everything, write clear reports</li></ul>
+      </div>
+      <div class="journey-step">
+        <div class="journey-dot"></div>
+        <div class="journey-step-num">STEP 07</div>
+        <div class="journey-step-title">ADVANCED SECURITY RESEARCH</div>
+        <p>This is the frontier. CVE research, malware analysis, red teaming, cloud security, binary exploitation. Build tools, publish writeups, create your reputation.</p>
+        <ul><li>Certifications: OSCP, CEH, eJPT</li><li>Build a public GitHub portfolio</li><li>Write security blog posts & research papers</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIBRARY -->
+<section id="library">
+  <div class="section-inner">
+    <div class="reveal" style="text-align:center">
+      <p class="section-tag">// digital library</p>
+      <h2 class="section-title" style="justify-content:center;display:flex">LIBRARY</h2>
+      <div class="section-line" style="margin:0 auto 30px"></div>
+      <p class="library-intro">Three books written from experience — philosophy, focus, and hacking. Each one is a world of its own. Enter, read, transform.</p>
+    </div>
+    <div class="books-grid">
+      <!-- Book 1 -->
+      <div class="book-card reveal" onclick="openBook(1)">
+        <div class="book-cover book-cover-1">
+          <div style="width:110px;height:110px;border-radius:50%;border:2px solid var(--warm-accent);box-shadow:0 0 25px rgba(201,150,61,0.4);overflow:hidden;margin-bottom:20px;">
+            <img src="https://i.ibb.co/gMxY73G8/philosphy-png.jpg" alt="Philosophy" style="width:100%;height:100%;object-fit:cover;filter:sepia(20%) contrast(1.1);">
+          </div>
+          <div class="book-title-en">The Philosophy<br>of Becoming</div>
+          <div class="book-cover-sub">By AAREX • Philosophy</div>
+        </div>
+        <div class="book-info">
+          <p>A deep Hinglish guide on becoming your best self — Stoicism, discipline, purpose, and Islamic wisdom on self-development.</p>
+          <span class="book-open-btn">Read Book →</span>
+        </div>
+      </div>
+      <!-- Book 2 -->
+      <div class="book-card reveal" onclick="openBook(2)">
+        <div class="book-cover book-cover-2">
+          <div style="width:110px;height:110px;border-radius:50%;border:2px solid #aaa;box-shadow:0 0 25px rgba(150,150,150,0.3);overflow:hidden;margin-bottom:20px;">
+            <img src="https://i.ibb.co/SXQwdRRn/focus-png.jpg" alt="Focus" style="width:100%;height:100%;object-fit:cover;filter:grayscale(40%) contrast(1.15);">
+          </div>
+          <div class="book-title-en">Focus Beyond<br>Distraction</div>
+          <div class="book-cover-sub">By AAREX • Productivity</div>
+        </div>
+        <div class="book-info">
+          <p>The ultimate productivity guide in Hinglish — dopamine reset, deep work systems, 8+ hour focus sessions, and digital minimalism.</p>
+          <span class="book-open-btn">Read Book →</span>
+        </div>
+      </div>
+      <!-- Book 3 -->
+      <div class="book-card reveal" onclick="openBook(3)">
+        <div class="book-cover book-cover-3">
+          <div style="width:110px;height:110px;border-radius:50%;border:2px solid #0066ff;box-shadow:0 0 25px rgba(0,100,255,0.5);overflow:hidden;margin-bottom:20px;">
+            <img src="https://i.ibb.co/840QDf5q/ethical-png.jpg" alt="Ethical Hacking" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.9) saturate(1.3) hue-rotate(10deg);">
+          </div>
+          <div class="book-title-en">The Ethical<br>Hacker Journey</div>
+          <div class="book-cover-sub">By AAREX • Cybersecurity</div>
+        </div>
+        <div class="book-info">
+          <p>A complete roadmap from zero to ethical hacker — Linux, networking, web security, CTFs, bug bounty, and building a career.</p>
+          <span class="book-open-btn">Read Book →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">AAREX</div>
+  <div class="footer-links">
+    <a href="#hero">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#journey">Journey</a>
+    <a href="#library">Library</a>
+  </div>
+  <p>// Built with discipline. Inspired by curiosity. — AAREX 2025</p>
+</footer>
+
+<!-- BOOK OVERLAY -->
+<div id="book-overlay">
+  <div class="book-progress-bar" id="book-progress"></div>
+  <button class="book-close" onclick="closeBook()" id="book-close-btn">✕</button>
+  <div class="book-wrapper" id="book-content"></div>
+</div>
+
+<!-- AUDIO -->
+<audio id="bg-music" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = (e.clientX - 10) + 'px';
+  cursor.style.top = (e.clientY - 10) + 'px';
+  cursorDot.style.left = (e.clientX - 2) + 'px';
+  cursorDot.style.top = (e.clientY - 2) + 'px';
+});
+
+// ── LOADER ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('loader');
+    loader.style.opacity = '0';
+    loader.style.transition = 'opacity 0.8s';
+    setTimeout(() => { loader.style.display = 'none'; initReveal(); }, 800);
+  }, 2800);
+});
+
+// ── MATRIX ──
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+function resizeMatrix() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeMatrix();
+window.addEventListener('resize', resizeMatrix);
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const fontSize = 14;
+let columns = Math.floor(canvas.width / fontSize);
+let drops = Array(columns).fill(1);
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = fontSize + 'px Share Tech Mono';
+  drops.forEach((y,i) => {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * fontSize, y * fontSize);
+    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  });
+}
+setInterval(drawMatrix, 50);
+
+// ── TYPED TEXT ──
+const phrases = [
+  'Breaking systems to make them stronger.',
+  'Philosophy + Code = Power.',
+  'Discipline is the only shortcut.',
+  'Real hackers read philosophy.',
+  'The terminal is my canvas.',
+];
+let pi = 0, ci = 0, deleting = false;
+const typedEl = document.getElementById('typed');
+function type() {
+  const phrase = phrases[pi];
+  if (!deleting) {
+    typedEl.textContent = phrase.slice(0, ci++);
+    if (ci > phrase.length) { deleting = true; setTimeout(type, 2000); return; }
+  } else {
+    typedEl.textContent = phrase.slice(0, ci--);
+    if (ci < 0) { deleting = false; pi = (pi+1) % phrases.length; ci = 0; }
+  }
+  setTimeout(type, deleting ? 40 : 80);
+}
+setTimeout(type, 3500);
+
+// ── SCROLL REVEAL ──
+function initReveal() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // skill bars
+        const bar = e.target.querySelector('.skill-bar');
+        if (bar) {
+          const pct = e.target.dataset.skill || 70;
+          setTimeout(() => { bar.style.width = pct + '%'; }, 200);
+        }
+        // journey steps
+        if (e.target.classList.contains('journey-step')) {
+          e.target.classList.add('visible');
+        }
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal, .journey-step').forEach(el => observer.observe(el));
+}
+
+// ── HAMBURGER ──
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+hamburger.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+  hamburger.classList.toggle('open');
+});
+function closeMenu() { navLinks.classList.remove('open'); hamburger.classList.remove('open'); }
+
+// ── MUSIC ──
+const music = document.getElementById('bg-music');
+const musicBtn = document.getElementById('music-btn');
+let playing = false;
+musicBtn.addEventListener('click', () => {
+  if (!playing) { music.play().catch(()=>{}); musicBtn.textContent = '♪ ON'; playing = true; }
+  else { music.pause(); musicBtn.textContent = '♪ OFF'; playing = false; }
+});
+
+// ── LANGUAGE ──
+const langSelect = document.getElementById('lang-select');
+const translations = {
+  en: { about_p1: "Yaar, I'm an aspiring ethical hacker and cybersecurity researcher — no IIT or IIM backing, just a determined student who wants to prove himself. I find exploiting systems as exciting as reading Stoic philosophy.", about_p2: "My journey started from curiosity — why do systems break? How do networks communicate? That curiosity became obsession, and obsession became a discipline I live by every single day.", hero_sub: "Ethical Hacker | Builder | Researcher" },
+  hi: { about_p1: "Yaar, main ek aspiring ethical hacker aur cybersecurity researcher hoon — kisi bade college ka naam nahi, bas ek determined student jo khud ko prove karna chahta hai. Mujhe systems hack karna utna hi exciting lagta hai jitna Stoic philosophy padhna.", about_p2: "Mera journey curiosity se start hua — why do systems break? Yeh curiosity obsession ban gayi, aur obsession ek discipline ban gayi jo main roz jeeta hoon.", hero_sub: "Ethical Hacker | Builder | Researcher" },
+  ar: { about_p1: "أنا مخترق أخلاقي طموح وباحث في الأمن السيبراني — لا اسم جامعة كبيرة، فقط طالب مصمم يريد إثبات نفسه. أجد اختراق الأنظمة مثيراً تماماً كقراءة الفلسفة الرواقية.", about_p2: "بدأت رحلتي من الفضول — لماذا تنهار الأنظمة؟ كيف تتواصل الشبكات؟ أصبح هذا الفضول هوساً، وصار الهوس انضباطاً أعيش به كل يوم.", hero_sub: "مخترق أخلاقي | بانٍ | باحث" },
+  nl: { about_p1: "Ik ben een aspirant ethisch hacker en cybersecurity onderzoeker — geen grote universiteit, gewoon een vastberaden student die zichzelf wil bewijzen. Ik vind het exploiteren van systemen net zo spannend als het lezen van stoïsche filosofie.", about_p2: "Mijn reis begon met nieuwsgierigheid — waarom breken systemen? Hoe communiceren netwerken? Die nieuwsgierigheid werd obsessie, en obsessie werd een discipline die ik elke dag leef.", hero_sub: "Ethisch Hacker | Bouwer | Onderzoeker" }
+};
+langSelect.addEventListener('change', () => {
+  const lang = langSelect.value;
+  const t = translations[lang] || translations.en;
+  const p1 = document.getElementById('about-p1');
+  const p2 = document.getElementById('about-p2');
+  const sub = document.querySelector('.hero-sub');
+  if (p1) p1.textContent = t.about_p1;
+  if (p2) p2.textContent = t.about_p2;
+  if (sub) sub.textContent = t.hero_sub;
+  if (lang === 'ar') { document.body.style.direction = 'rtl'; } 
+  else { document.body.style.direction = 'ltr'; }
+});
+
+// ── BOOK PROGRESS ──
+function updateBookProgress() {
+  const overlay = document.getElementById('book-overlay');
+  const bar = document.getElementById('book-progress');
+  if (!overlay.classList.contains('open')) return;
+  const scrollTop = overlay.scrollTop;
+  const scrollHeight = overlay.scrollHeight - overlay.clientHeight;
+  const pct = (scrollTop / scrollHeight) * 100;
+  bar.style.width = pct + '%';
+}
+document.getElementById('book-overlay').addEventListener('scroll', updateBookProgress);
+
+// ── BOOK CONTENT ──
+const bookContent = {
+  1: `
+<div class="book-title-page">
+  <div class="book-main-title">The Philosophy<br>of Becoming</div>
+  <div class="book-author">By AAREX</div>
+</div>
+<div class="toc">
+  <div class="toc-title">Contents</div>
+  <div class="toc-item"><span>Prologue — Ek Baat Seedha</span><span>1</span></div>
+  <div class="toc-item"><span>I. Potential ka Dard</span><span>5</span></div>
+  <div class="toc-item"><span>II. Discipline Over Motivation</span><span>18</span></div>
+  <div class="toc-item"><span>III. Delayed Gratification</span><span>31</span></div>
+  <div class="toc-item"><span>IV. Deep Thinking</span><span>44</span></div>
+  <div class="toc-item"><span>V. Stoicism — The Eternal Shield</span><span>57</span></div>
+  <div class="toc-item"><span>VI. Emotional Control</span><span>69</span></div>
+  <div class="toc-item"><span>VII. Building Character</span><span>82</span></div>
+  <div class="toc-item"><span>VIII. Islamic Wisdom</span><span>95</span></div>
+  <div class="toc-item"><span>IX. Purpose & Legacy</span><span>108</span></div>
+  <div class="toc-item"><span>X. Modern Distractions</span><span>121</span></div>
+  <div class="toc-item"><span>XI. Meaningful Living</span><span>134</span></div>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Prologue</span>
+  <h2 class="chapter-heading">Ek Baat Seedha</h2>
+  <p class="book-p">Bhai, sach bolu to life ka sabse bada problem failure nahi hai. Sabse bada problem hai — apni asli potential tak kabhi pahunch hi na paana. Aur yeh sirf tere saath nahi ho raha. Yeh duniya ke 95% logon ke saath ho raha hai. Woh log jo ek baar sochte hain "kuch bada karunga", phir slowly, quietly, bina kisi noise ke — mediocre ho jaate hain. Normal ho jaate hain. Comfortable ho jaate hain.</p>
+  <p class="book-p">Yeh kitaab usi 5% ke liye hai jo bachna chahta hai uss quiet death se. Jo feel karta hai ki andar kuch hai — kuch bada, kuch burning — but nahi pata ki use bahar kaise nikale. Tere liye. Merely liye. Sabke liye jo kabhi raaton ko jaag ke sochte hain "main kya kar raha hoon apni zindagi ke saath?"</p>
+  <div class="book-quote">"The mass of men lead lives of quiet desperation." — Henry David Thoreau</div>
+  <p class="book-p">Yeh philosophy ki kitaab hai, lekin kisi bhi dry academic textbook jaisi nahi. Main tujhse baat karoonga jaise ek bada bhai karta hai — seedha, honest, aur thoda harsh bhi agar zaroorat padi. Kyunki love sometimes demands honesty over comfort.</p>
+  <p class="book-p">Iski zaroori nahi ki tu philosopher ho ya deeply spiritual ho. Tu ek normal student ho sakta hai, ek confused teenager, ya koi jo bas better banna chahta hai. Yahi kaafi hai. Shuru karte hain.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter I</span>
+  <h2 class="chapter-heading">Potential ka Dard — Why Most People Never Reach Their Best</h2>
+  <p class="book-p">Ek baar ek banda tha. Smart tha, talented tha, sab kuch tha. Har koi kehta tha — "yaar, tu toh bahut aage jaayega." Woh khud bhi sochta tha aise. Aur phir... kuch nahi hua. Aaj woh ek boring job mein hai, raat ko Netflix dekh ke so jaata hai, aur subah ek naye regret ke saath uthta hai.</p>
+  <p class="book-p">Yeh story rare nahi hai. Yeh actually sabse common story hai. Aur agar tujhe dar lag raha hai ki yeh teri story ban sakti hai — good. Woh dar kuch kehna chahta hai.</p>
+  <p class="book-p">Potential reach na karne ke teen main reasons hain — aur yeh reasons kisi bhi academic psychology text se zyada simple, aur zyada brutal hain:</p>
+  <p class="book-p"><strong>Pehla reason: Comfort addiction.</strong> Bhai, hum sab ko comfort chahiye — yeh natural hai. But jab comfort primary goal ban jaata hai — jab tum every uncomfortable situation se bhaagna chahte ho — tab tum actually apni growth ko systematically destroy karte ho. Har baar jab tumne ek hard task avoid kiya, tumne apne brain ko ek signal diya: "main capable nahi hoon." Aur brain — woh amazing organ — believe karta hai isse.</p>
+  <p class="book-p"><strong>Doosra reason: Identity crisis.</strong> Bahut se log nahi jaante ki woh actually kya hain. Woh woh sab kuch hain jo society ne unhe bola — "tu science student hai", "tu middle class hai", "tujhe stability chahiye." Koi nahi bolta — "tu creator hai, explorer hai, thinker hai." Jab identity weak hoti hai, decisions bhi weak hote hain.</p>
+  <div class="book-quote">"Until you make the unconscious conscious, it will direct your life and you will call it fate." — Carl Jung</div>
+  <p class="book-p"><strong>Teesra reason: Lack of a compelling vision.</strong> Yaar, most people ke paas koi real vision nahi hoti zindagi ke liye. Unhe bas pata hai ki "marks chahiye", "job chahiye", "stability chahiye." Yeh survival goals hain. Yeh dreams nahi hain. Aur bina ek burning dream ke, koi bhi long-term sacrifice karna almost impossible hai.</p>
+  <p class="book-p">Toh pehla kaam yeh hai — find your vision. Nahi toh sab kuch — discipline, hustle, knowledge — sab hollow ho jaata hai. Ek ship without a destination sirf gahumta rehta hai.</p>
+  <div class="book-divider">✦ ✦ ✦</div>
+  <p class="book-p">Main chahta hoon ki tu ek kaam kare aaj raat. Phone rakh. Notebook utha. Aur likh — agar mujhe kisi cheez ki parwah na hoti — fail hone ki, logon ke judge karne ki, paison ki — toh main kya karta? Woh answer — woh honest, scared, exciting answer — shayad teri asli direction hai.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter II</span>
+  <h2 class="chapter-heading">Discipline Over Motivation — The Most Misunderstood Truth</h2>
+  <p class="book-p">Social media pe thousands of motivational videos hain. "Rise and grind." "You can do it." "Believe in yourself." Aur phir bhi — after watching them, two days baad, same old routine. Wahi subah uthne mein der, wahi procrastination, wahi "kal se pakka."</p>
+  <p class="book-p">Kyun? Kyunki motivation is an emotion. Aur emotions — like all weather — change. Aaj sun hai, kal cloudy. Aaj feel hai, kal nahi. Agar tu apni life ko motivation pe depend karta hai, tu ek fair-weather traveler hai — ache dino mein chalta hai, bure dino mein ruk jaata hai.</p>
+  <p class="book-p">Discipline is completely different. Discipline is a system. Discipline kahta hai — "feeling ho ya na ho, ye kaam hoga." Jaise ek surgeon. Surgeon ke ghar mein problem ho, uski mood off ho, woh exhausted ho — phir bhi woh operation table pe jaake surgeon banta hai. Because that's who he is, not what he feels in the moment.</p>
+  <div class="book-quote">"Motivation gets you started. Discipline keeps you going. Character makes you unstoppable."</div>
+  <p class="book-p">Discipline build karne ka process simple hai, but hard to execute. Teen cheezein chahiye: <strong>clarity</strong> (kya karna hai, exactly), <strong>systems</strong> (kaise karna hai, daily), aur <strong>identity shift</strong> (main woh insaan hoon jo yeh karta hai).</p>
+  <p class="book-p">Yaar, ek example deta hoon. Main 5 AM uthna chahta tha. Pehle haftey — failed. Doosra hafta — failed. Teesra hafta — main ne apni identity change ki. Main ne khud ko nahi kaha "main 5 AM uthne ki koshish karunga." Main ne kaha — "main ek early riser hoon." Woh shift — woh small identity change — sab kuch badal deta hai. Kyunki hum apni identity ke against act karna bahut uncomfortable feel karte hain.</p>
+  <p class="book-p">Practical advice: pehle sirf ek habit choose karo. Sirf ek. Uspe 66 din do — research kehti hai ki yahi actual habit formation timeline hai, 21 din nahi. 66 din baad, woh habit almost automatic ho jaati hai. Tab doosri habit add karo. Yahi compounding of discipline hai.</p>
+  <div class="book-divider">✦ ✦ ✦</div>
+  <p class="book-p">Aur ek important baat — discipline ka matlab self-punishment nahi hai. Discipline ka matlab hai — teri future self ko teri present self se zyada importance dena. Teri future self tumhara shukria adaa karega. Present self ko bas thoda patience chahiye.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter III</span>
+  <h2 class="chapter-heading">Delayed Gratification — The Superpower Nobody Talks About</h2>
+  <p class="book-p">1972 mein Stanford University mein ek famous experiment hua — "The Marshmallow Test." Bachon ko ek marshmallow diya jaata tha. Kaha jaata tha — agar tum 15 minute wait karo bina khaye, tumhe do marshmallow milenge. Kuch bachon ne wait kiya. Kuch ne nahi kiya.</p>
+  <p class="book-p">Researchers ne phir in bachon ko track kiya decades tak. Jo bachon ne wait kiya — unke SAT scores better the, unke careers better nikle, unke relationships healthier the, unki mental health better thi. Ek marshmallow test — ek lifetime ki success ka predictor.</p>
+  <p class="book-p">Yeh sunke thoda scary lagta hai, hai na? But yahan ek good news hai — delayed gratification ek skill hai. Yeh fixed nahi hai. Isko develop kiya ja sakta hai.</p>
+  <div class="book-quote">"The ability to delay gratification is one of the most critical skills for success in life."</div>
+  <p class="book-p">Aaj ki generation ke liye yeh skill develop karna particularly challenging hai. Kyunki sab kuch instant hai. Hunger? Swiggy 30 minutes. Boredom? Reels. Connection? Ek message. Dopamine? Free. Har waqt. Unlimited. Is environment mein delayed gratification ka muscle naturally atrophy hota hai — jaise ek arm ko use na karo toh weak ho jaata hai.</p>
+  <p class="book-p">Toh isse train karna padega deliberately. Ek simple exercise: <strong>the 10-minute rule.</strong> Jab bhi kuch instantly chahiye — khaana, phone, entertainment — 10 minute wait karo. Bas 10 minute. In 10 minutes mein, ya toh craving pass ho jaati hai, ya tu conscious decision leke uss cheez ko enjoy karta hai — without guilt. Yeh small practice, over months, fundamentally reshapes your relationship with discomfort.</p>
+  <p class="book-p">Bada perspective yeh hai — life mein sab cheez worthwhile delayed hai. Good health delayed outcome hai of daily exercise. Deep knowledge delayed outcome hai of daily reading. Strong relationships delayed outcome hai of consistent care. Financial freedom delayed outcome hai of disciplined saving. Jo log yeh samajh jaate hain — aur jee lete hain accordingly — woh consistently win karte hain. Baaki sab hamster wheel pe rehte hain.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter IV</span>
+  <h2 class="chapter-heading">Deep Thinking — The Lost Art</h2>
+  <p class="book-p">Bhai, ek simple sawaal: aakhri baar tune sirf socha kab tha? Phone nahi, music nahi, podcast nahi — sirf tum, tum akele, apne thoughts ke saath? Agar answer hai "yaad nahi" — toh yeh chapter tere liye particularly important hai.</p>
+  <p class="book-p">Hum ek aise zamane mein jee rahe hain jahan thinking — actual, deep, uncomfortable thinking — almost extinct ho gayi hai. Har spare moment mein hum apna phone nikaal lete hain. Waiting in line — phone. Walk pe — earphones. Bathroom mein — phone. Hum apne khud ke thoughts se bhaag rahe hain.</p>
+  <p class="book-p">Lekin yahan ek paradox hai. The greatest ideas, the most important decisions, the deepest insights — yeh sab tab aate hain jab brain wander karta hai. Scientists isse "default mode network" kehte hain — brain ka woh part jo tab active hota hai jab tum kuch specific nahi kar rahe. Yahi woh state hai jahan creativity, problem-solving, aur self-understanding hota hai.</p>
+  <div class="book-quote">"All of humanity's problems stem from man's inability to sit quietly in a room alone." — Blaise Pascal</div>
+  <p class="book-p">Deep thinking practice karne ke liye roze sirf 20 minute chahiye. Koi screen nahi. Koi input nahi. Bas baitho — chahe garden mein, chahe apne room mein — aur sochne do mind ko. Pehle kuch din uncomfortable lagega. Tum fidget karoge, phone uthana chahoge. Woh discomfort itself is the practice. Ruko. Observe karo. Thoughts aayenge, jaayenge. Koi interesting insight aa sakti hai. Koi old problem ka solution aa sakta hai.</p>
+  <p class="book-p">Alongside solitary thinking, journaling is perhaps the most powerful thinking tool available to any human being. Jab tu likhta hai, tu apne thoughts ko externalize karta hai. Unhe examine karta hai. Unhe challenge karta hai. Writing is thinking made visible. Aur jab thinking visible hoti hai — tab tum actually apne saath honest ho sakte ho.</p>
+  <p class="book-p">Last point on deep thinking: read books. Not articles, not tweets, not short-form content — actual books. Books demand sustained attention. Woh tujhe ek train of thought follow karne ki practice deti hain. The person who reads 50 books a year has fundamentally different thinking capacity than the person who scrolls 50 reels a day. Yeh exaggeration nahi hai. Yeh neuroscience hai.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter V</span>
+  <h2 class="chapter-heading">Stoicism — The Eternal Shield</h2>
+  <p class="book-p">Marcus Aurelius. Ek naam jo mujhe genuinely excited karta hai. Ek Roman Emperor jo raat ko apne tent mein baith ke philosophy likhta tha — unke private notes jo "Meditations" ke naam se famous hue — aur jo aaj bhi, almost 2000 saal baad, duniya ke leaders, athletes, aur thinkers padhte hain. Kya tha unke paas? Stoicism.</p>
+  <p class="book-p">Stoicism ek Greek-Roman philosophy hai jo kabhi complicated nahi thi. Iska core message almost brutally simple hai: <strong>kuch cheezein tere control mein hain, kuch nahi. Apni energy sirf woh lagao jo control mein hai.</strong></p>
+  <p class="book-p">Tere control mein kya hai? Teri choices. Tera response. Tera effort. Teri values. Tera character. Kya nahi hai tere control mein? Doosron ke opinions. Weather. Economy. Kisi bhi result ka guarantee. Kisi bhi outcome jisme luck involved ho.</p>
+  <div class="book-quote">"You have power over your mind, not outside events. Realize this, and you will find strength." — Marcus Aurelius</div>
+  <p class="book-p">Yeh distinction — jo Stoics "dichotomy of control" kehte hain — genuinely life-changing hai agar tum ise deeply internalize karo. Sochte hain students fail karke devastate kyun ho jaate hain. Kyunki unhe lagta hai ki result unke control mein tha. It wasn't entirely. Tumhara effort, preparation, attitude — woh tha. Result — teacher ka mood, paper ka difficulty, luck — woh nahi tha.</p>
+  <p class="book-p">Dil mein rakh do: <strong>focus on inputs, not outcomes.</strong> Aaj kya kiya maine? Puri tayyari ki? Sahi effort diya? Agar haan — tab jo bhi outcome aaya, woh fair hai. Aur agar outcome ganda aaya bhi, toh usse sirf feedback ki tarah dekho — not as a judgment of your worth.</p>
+  <p class="book-p">Ek aur Stoic concept: <strong>Memento Mori</strong> — remember that you will die. Yeh ghaabraan wali baat nahi hai. Yeh liberating hai. Marcus Aurelius apne notes mein likhte the — "think of all the things you've feared... how many of those fears materialized? And even if they did, how many of those turned out as bad as feared?" Death awareness forces perspective. Teri daily petty anxieties suddenly shrink jab tum yaad dilate ho ki yeh life temporary hai.</p>
+  <p class="book-p">Roz ek Stoic practice karo: <strong>negative visualization.</strong> Subah uthke, sochte hao ki kya worst-case scenario ho sakta hai aaj. Kya tum isse handle kar sakte ho? Almost certainly yes. Yeh practice anxiety reduce karti hai aur gratitude increase karti hai simultaneously. Stoics genius the.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter VI</span>
+  <h2 class="chapter-heading">Emotional Control — The Invisible Battlefield</h2>
+  <p class="book-p">Yaar, main bahut openly bol raha hoon — meri sab se badi failures, sab se bade regrets — almost sab kisi strong negative emotion ki wajah se liye gaye decisions ke baad hain. Anger mein bola kuch aisa jo nahi bolna chahiye tha. Fear mein chod diya kuch aisa jo continue karna chahiye tha. Insecurity mein try hi nahi kiya.</p>
+  <p class="book-p">Emotions are not bad. Woh valuable information hain. Fear signals danger. Anger signals violation of values. Sadness signals loss. Emotions ka function real hai. But emotions are meant to be data, not dictators.</p>
+  <p class="book-p">Viktor Frankl — Nazi concentration camps ka survivor, psychiatrist, philosopher — ne likha: "Between stimulus and response there is a space. In that space is our power to choose our response. In our response lies our growth and our freedom." Yeh space — yeh pause between trigger and reaction — yahi sab kuch hai.</p>
+  <div class="book-quote">"He who angers you, conquers you." — Elizabeth Kenny</div>
+  <p class="book-p">Woh space kaise create karna hai? Teen steps: <strong>pause, observe, respond.</strong> Jab koi strong emotion hit kare — pehle literally ruko. Ek second. Ek breath. Phir observe karo — kya feel ho raha hai, kahan feel ho raha hai body mein. Name the emotion. "Main abhi angry feel kar raha hoon." This naming process — psychologists isse "affect labeling" kehte hain — literally reduces the emotional intensity in the brain. Phir choose karo tumhara response.</p>
+  <p class="book-p">Emotional control ka matlab emotional suppression nahi hai. Suppression is toxic. It builds up and explodes later. Emotional control ka matlab hai — experience karo emotion ko, understand karo usse, aur tab respond karo from a place of reason rather than reaction.</p>
+  <p class="book-p">Sabse critical jaga yeh practice karni hai: relationships. Jo log tumhe sabse zyada trigger karte hain — family, close friends, romantic partners — unhe respond karne se pehle always pause karo. Yahan kaha hua kuch bhi permanent consequences le sakta hai. The relationships worth keeping deserve the respect of a thoughtful response, not a reactive one.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter VII</span>
+  <h2 class="chapter-heading">Building Character — The Only Thing That Remains</h2>
+  <p class="book-p">Sapne hain. Skills hain. Resources bhi hain. Lekin character nahi hai. Toh ultimately — sab kuch build hoga, aur sab kuch crumble bhi ho jaayega. History is full of brilliant people who destroyed themselves not from lack of talent, but from lack of character.</p>
+  <p class="book-p">Character kya hai? Character woh hai jo tu tab karta hai jab koi nahi dekh raha. Character woh hai jab sab ne bola "chhod de" aur tu phir bhi ruka. Character woh hai jab tujhe jhooth bol ke faayda ho sakta tha aur tu sach bola. Character is not who you are when it's easy — it's who you are when everything is hard and nobody is watching.</p>
+  <div class="book-quote">"The true test of a man's character is what he does when no one is watching." — John Wooden</div>
+  <p class="book-p">Character build hota hai through choices. Small choices, mostly. Har baar jab tu promise rakhe — khud se ya doosron se — character thoda strong hota hai. Har baar jab tu compromise kare on your values for convenience — character thoda weak hota hai. Yeh ledger continuously update hota rehta hai. Aur ek din you look in the mirror and you are that person — either strong or hollow.</p>
+  <p class="book-p">Core character traits jo I believe are non-negotiable: <strong>integrity</strong> (do what you say, say what you mean), <strong>courage</strong> (not absence of fear, but action despite it), <strong>humility</strong> (knowing what you don't know), <strong>consistency</strong> (showing up even when the mood is gone), and <strong>compassion</strong> (caring genuinely about other people's wellbeing).</p>
+  <p class="book-p">Ek practical exercise: har raat, sone se pehle, sirf ek sawaal: "Aaj main kaisi cheez pe proud hoon jo maine kisi ko bataya nahi?" Woh small pride — woh private integrity — woh character hai. Isko daily nurture karo.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter VIII</span>
+  <h2 class="chapter-heading">Islamic Wisdom — The Forgotten Pearl</h2>
+  <p class="book-p">Main chahta hoon is chapter mein kuch aisa share karun jo mujhe personally bahut deeply affect karta hai. Main koi aalim nahi hoon, koi religious scholar nahi hoon. Main ek seeker hoon — koi jo Islamic tradition mein self-development ke liye wisdom dhundh raha hai. Aur jo mila hai woh extraordinary hai.</p>
+  <p class="book-p">Islam mein concept hai <strong>Muhasaba</strong> — self-accountability. Rozu raat, apni actions ka hisaab karo. Imam Al-Ghazali ne likha — "He who knows himself, knows his Lord." Yeh ek profound idea hai. Self-knowledge as the path to the Divine. Tum khud ko jitna better samjhoge — your strengths, your weaknesses, your triggers, your patterns — utna hi better insaan banoge.</p>
+  <div class="book-quote">"Verily, Allah does not change the condition of a people until they change what is in themselves." — Quran 13:11</div>
+  <p class="book-p">Yeh ayat — Surah Ar-Ra'd ki — mujhe genuinely rone par majboor karti hai kabhi kabhi. "Allah kisi qaum ki halat tabdeel nahi karta jab tak woh khud apne andar ki cheez tabdeel na karein." Self-change pehle aata hai. External change follows. Kitni profound responsibility hai yeh — tumhari life tumhare haath mein hai. Bahanon ke liye no room left.</p>
+  <p class="book-p">Concept of <strong>Tawakkul</strong> — reliance on Allah after doing your best. Yeh anxiety ke against ek incredible shield hai. Tu apna 100% de, phir nateeje Allah pe chhod de. This combination — maximum human effort + genuine surrender of outcomes — removes the burden of control anxiety while maintaining full engagement with the work.</p>
+  <p class="book-p">Concept of <strong>Sabr</strong> — patience — is one of the most misunderstood virtues in Islamic thought. Sabr ka matlab passive waiting nahi hai. Sabr ka matlab hai active, dignified perseverance while holding your values. Jab hardship aata hai, Sabr kahta hai — "main isse face karunga, learn karunga, aur carry on karunga — without bitterness."</p>
+  <p class="book-p">Prophet Muhammad (ﷺ) ne farmaya — "Tie your camel, then put your trust in Allah." Yeh ek complete philosophy of action hai. Do the work. Take the precautions. Make the effort. Then and only then — surrender the rest. Yeh combination of agency aur humility — yeh mujhe genuinely inspiring lagti hai har waqt.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter IX</span>
+  <h2 class="chapter-heading">Purpose & Legacy — Why You're Here</h2>
+  <p class="book-p">Ek din — guaranteed — tum nahi rahoge. Woh sab kuch jo tumhare paas hai aaj — body, naam, memories — sab gone. Kya bachega? Kya effect tumne duniya pe choda? Kya kisi ki life genuinely better hui tumhari wajah se? Kya kuch aisa create kiya tumne jo tumse zyada jeeyega?</p>
+  <p class="book-p">Yeh morbid nahi hai. Yeh liberating hai. Jab tum apni life ko end se backwards dekhte ho — "main kya legacy chahta hoon?" — suddenly clarity aati hai. Jo cheezein important lagti thi — log kya sochenge, social media followers, short-term comfort — woh shrink ho jaati hain. Jo cheezein actually important hain — mastery, relationships, contribution, character — woh naturally emerge karti hain.</p>
+  <div class="book-quote">"The two most important days in your life are the day you are born and the day you find out why." — Mark Twain</div>
+  <p class="book-p">Purpose dhundna ek grand revelation ka wait karna nahi hai. Purpose emerge hota hai — action se, exploration se, service se. Tum aaj jo karte ho — agar tum karte ho it with full presence, genuine care, continuous improvement — purpose khud organize ho jaata hai around that action.</p>
+  <p class="book-p">Japanese mein ek concept hai: <strong>Ikigai</strong> — your reason for being. Ek Venn diagram hai chaar circles ka: <strong>jo tujhe pasand hai</strong>, <strong>jo tu achha karta hai</strong>, <strong>jo duniya ko chahiye</strong>, <strong>aur jo tujhe pay kar sakta hai</strong>. Jahan yeh chaar milte hain — woh tera Ikigai hai. Yeh simple model, seriously explore kiya jaaye, can save years of confusion.</p>
+  <p class="book-p">Legacy sirf famous logon ki nahi hoti. Tera teacher jo tujhe believe karne laga — uski legacy hai. Teri maa jo raat ko jaagi jab tu beemar tha — uski legacy hai. Legacy is any genuine positive impact that outlasts your physical presence. Tum apni daily choices se right now legacy create kar rahe ho — ya nahi kar rahe. Choose consciously.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter X</span>
+  <h2 class="chapter-heading">Modern Distractions — The Silent Thief</h2>
+  <p class="book-p">Yaar, seedha bolta hoon. Social media companies — Instagram, YouTube, TikTok — unke engineers ne saalon mein research ki aur millions spend kiye ek cheez pe: tumhare brain ki reward system ko hijack karna. Dopamine loops design kiye gaye hain professionally, scientifically, deliberately. Tum ek system ke against compete kar rahe ho jisme billions of dollars aur brightest minds invested hain. Akele willpower se nahi jeeto isse. Tujhe ek system chahiye.</p>
+  <p class="book-p">Distraction sirf time steal nahi karti. Distraction steals identity. Agar tu roz 4 ghante random content consume karta hai, toh tum actually woh log ban rahe ho jinka content tum dekh rahe ho — unki values, unki priorities, unka thinking style — sab slowly transfer hota hai. Yeh conspiracy theory nahi hai. Yeh basic psychology hai. "You become what you consume."</p>
+  <div class="book-quote">"The price of anything is the amount of life you exchange for it." — Henry David Thoreau</div>
+  <p class="book-p">Practical steps to reclaim your attention: pehla — <strong>phone ko bedroom se bahar nikalo.</strong> Nahi chaahiye woh pehli cheez subah aur aakhri cheez raat ko. Doosra — <strong>apps se notifications off karo.</strong> Sabse. Tum decide karo kab check karna hai — app tumhe nahi call karegi. Teesra — <strong>designated phone time</strong> rakho — maybe 12 PM to 12:15 PM, 6 PM to 6:15 PM. Outside these windows, phone is a tool, not a companion.</p>
+  <p class="book-p">Chautha aur most important: <strong>replace the void.</strong> Jab tum scrolling band karte ho, ek vacuum create hota hai. Woh vacuum books, exercise, real conversations, creation, study se fill karo. Otherwise willpower depletes aur woh same screen wait kar raha hai. Nature abhors a vacuum. So does the human mind.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter XI</span>
+  <h2 class="chapter-heading">Meaningful Living — The Final Chapter</h2>
+  <p class="book-p">Aakhri mein, sab kuch sirf ek sawaal pe aata hai: kya tum truly jeey rahe ho? Ya sirf exist kar rahe ho?</p>
+  <p class="book-p">Meaningful life ka matlab luxurious life nahi hai. Meaningful life ka matlab comfortable life bhi nahi hai. Meaningful life woh hai jisme tumhare values tumhare actions se match karte hain. Jisme tumhara day aisa guzra ki agar tum us din ke bare mein kisi ko batao, toh tum thoda proud feel karo.</p>
+  <p class="book-p">Meaning comes from: contribution (helping others genuinely), mastery (getting better at something you care about), belonging (real connections with real people), transcendence (feeling part of something larger than yourself). Yeh chaar components — ek researcher Dr. Martin Seligman ka PERMA model is close to this — jo genuinely fulfilling life banate hain.</p>
+  <div class="book-quote">"It is not the length of life, but the depth of life." — Ralph Waldo Emerson</div>
+  <p class="book-p">Main tujhse yeh nahi keh raha ki har din perfect hoga. Ya ki tujhe har cheez figure out karni hai aaj. Main sirf yeh keh raha hoon — shuru karo. Choose one thing. One discipline. One book. One relationship to invest in. One skill to build. Aur phir dil laga ke karo. Consistency over intensity, always.</p>
+  <p class="book-p">Aakhri baat, seedha dil se: Tu kuch bhi ban sakta hai. Seriously. Yeh motivational speech nahi hai — yeh observation hai. Jo bhi insaan tujhe inspire karta hai — woh bhi kabhi woh hi tha jo tum aaj ho. Confused, uncertain, trying, failing. Farq sirf yeh hai ki unhone quit nahi kiya. Aur tum bhi mat karo. Yeh duniya teri story sun ne ke liye wait kar rahi hai. Likh shuru karo.</p>
+  <p class="book-p" style="text-align:center;font-style:italic;margin-top:40px;">— AAREX</p>
+</div>
+`,
+  2: `
+<div class="book-title-page">
+  <div class="book-main-title">Focus Beyond<br>Distraction</div>
+  <div class="book-author">By AAREX</div>
+</div>
+<div class="toc">
+  <div class="toc-title">Contents</div>
+  <div class="toc-item"><span>Introduction — The Focus Crisis</span><span>1</span></div>
+  <div class="toc-item"><span>I. Dopamine — The Invisible Enemy</span><span>8</span></div>
+  <div class="toc-item"><span>II. Social Media & The Attention Economy</span><span>21</span></div>
+  <div class="toc-item"><span>III. Deep Work — The Core Skill</span><span>34</span></div>
+  <div class="toc-item"><span>IV. Building Your Focus System</span><span>47</span></div>
+  <div class="toc-item"><span>V. Study Habits That Actually Work</span><span>61</span></div>
+  <div class="toc-item"><span>VI. Environment Design</span><span>74</span></div>
+  <div class="toc-item"><span>VII. Sleep — The Secret Weapon</span><span>86</span></div>
+  <div class="toc-item"><span>VIII. Nutrition & Brain Performance</span><span>98</span></div>
+  <div class="toc-item"><span>IX. Digital Minimalism</span><span>110</span></div>
+  <div class="toc-item"><span>X. How To Focus 8+ Hours</span><span>123</span></div>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Introduction</span>
+  <h2 class="chapter-heading">The Focus Crisis — Yaar, Hum Ek Emergency Mein Hain</h2>
+  <p class="book-p">Ek experiment karo abhi. Set a timer for 10 minutes. Open a blank page. Write about any single topic without stopping, without checking your phone, without getting distracted. Just write, 10 minutes.</p>
+  <p class="book-p">Zyada se zyada log ab yeh nahi kar sakte. 10 minute sustained attention — jo ek generation pehle default tha — ab ek achievement ban gaya hai. Yaar, yeh scary hai. Seriously scary.</p>
+  <p class="book-p">Microsoft ka research kehta hai average attention span 2015 ke baad 12 seconds se gir ke 8 seconds ho gayi hai. 8 seconds. Goldfish ki 9 hai. Hum goldfish se worse ho gaye hain focused attention mein. Yeh headline shocking hai, lekin underlying reality even more alarming hai.</p>
+  <div class="book-quote">"In an age of distraction, nothing is so luxurious as concentration." — Kathryn Schulz</div>
+  <p class="book-p">Is kitaab mein main tujhe ek complete focus system doonga. Theory nahi sirf — practical, tested, real-world applicable. Kyunki yeh meri apni journey rahi hai. Main ek baar genuinely scattered tha — multiple tabs, notifications, shallow work, feeling busy but accomplishing nothing. Jab maine focus seriously liya — sab kuch badal gaya. Aur woh badlaav tujhe bhi ho sakta hai.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter I</span>
+  <h2 class="chapter-heading">Dopamine — The Invisible Enemy</h2>
+  <p class="book-p">Dopamine ko samjhna focus journey ka pehla aur most critical step hai. Kyunki without this understanding, tum symptoms treat karte rahoge, cause nahi. Aur kabhi permanent solution nahi milega.</p>
+  <p class="book-p">Dopamine ek neurotransmitter hai — brain ka chemical messenger. Yeh pleasure ka chemical nahi hai actually — yeh <strong>seeking</strong> ka chemical hai. Woh anticipation, woh drive jab tum kuch chahte ho — woh dopamine hai. Aur jab tum woh cheez paate ho? Dopamine drops. That's why after scrolling for an hour, tum feel karte ho hollow — dopamine did its job, got you to keep scrolling, never actually satisfied you.</p>
+  <p class="book-p">Social media, gaming, junk food, gambling — yeh sab <strong>supernormal stimuli</strong> hain. Yeh itna intense, itna fast dopamine hit dete hain jo evolution ne kabhi expect nahi kiya tha. Comparison karo: our ancestors had to hunt for hours for a meal — slow dopamine reward. Now? Two taps and pizza arrives. The brain's reward system was calibrated for the former world. It's overwhelmed — and addicted — in the latter.</p>
+  <div class="book-quote">"Every time you check your phone, you're actually training your brain to be less focused."</div>
+  <p class="book-p">Yeh dopamine dysregulation ka result: natural, slow-reward activities — studying, reading, exercise, deep work — feel utterly boring by comparison. Tum unhe try karte ho, feel nothing, quit. Woh activities aren't actually boring. Tere brain ne simply lost sensitivity to low-intensity rewards. The good news: this is reversible.</p>
+  <p class="book-p">Solution: <strong>Dopamine Detox.</strong> Yeh ek extreme form mein ek full day hai all stimulation se — no phone, no music, no entertainment, no social media. Bas walking, journaling, reading physical books, meditation. First few hours feel like withdrawal — literally. Anxiety, boredom, restlessness. Par phir — after a few hours — something magical happens. Your brain, starved of superstimulation, starts finding joy in simple things again. A sunset. The texture of a book. The feeling of thinking clearly. This is not spiritual — it's neuroscience. Sensitivity restored, slowly.</p>
+  <p class="book-p">If full detox feels extreme, start with <strong>dopamine fasting</strong> — no phone for the first 2 hours of your day. Those 2 hours become exponentially more productive. Try it for 7 days. Track your focus. Results will speak for themselves.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter II</span>
+  <h2 class="chapter-heading">Social Media & The Attention Economy — Yeh Business Hai</h2>
+  <p class="book-p">Ek baar clearly samjho: Instagram, YouTube, Twitter — yeh free products nahi hain. Tum product ho. Teri attention bik rahi hai advertisers ko. Aur is attention ko capture karne ke liye, unke engineers ne decades of behavioral psychology, slot machine mechanics, aur AI algorithms deploy kiye hain. Tu ek amateur vs. professionals ki game mein bina realizing ke participate kar raha tha.</p>
+  <p class="book-p">Infinite scroll — sirf ek feature nahi hai. Yeh deliberately engineered mechanism hai taaki tumhara brain ka natural stopping cue — "main page ke end pe pahunch gaya" — kabhi na aaye. Variable reward schedules — kabhi ek post boring, kabhi ek post amazing — yeh exactly woh mechanism hai jo gambling machines use karti hain. Yeh accidental nahi hai. Former Google design ethicist Tristan Harris has documented this extensively. These companies know exactly what they're doing.</p>
+  <div class="book-quote">"If you're not paying for the product, you are the product."</div>
+  <p class="book-p">Yeh jaanke tujhe angry hona chahiye. But anger unproductive hai — intelligent response productive hai. Intelligent response: use these platforms intentionally, with clear limits, for specific purposes — not as default leisure. Yeh apps se permanent deletion ki zaroorat nahi necessarily. Just conscious, intentional use.</p>
+  <p class="book-p">Practical: log how much time you actually spend on each app. Most people severely underestimate this. Screen time settings on iPhone/Android can show you the truth. When you see the number — 4 hours, 5 hours daily — it hits differently. Convert to weeks and years: 4 hours/day × 365 = 1460 hours/year = 60+ full days per year. Gone. To scrolling. Does that feel okay? If not — change starts now.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter III</span>
+  <h2 class="chapter-heading">Deep Work — Concentration Ka Superpower</h2>
+  <p class="book-p">Cal Newport ki book "Deep Work" ne mere perspective ko completely change kar diya. Newport ka argument: "Deep Work" — cognitively demanding tasks performed in a state of distraction-free concentration that push cognitive capabilities to the limits — is increasingly rare, increasingly valuable. Jo log is skill ko develop karte hain, woh future economy mein dominate karenge.</p>
+  <p class="book-p">Contrast this with "Shallow Work" — non-cognitively demanding, logistical tasks performed while distracted. Emails. Meetings. Scheduling. Routine tasks. Most people's entire workday is shallow work. They feel busy. They accomplish very little of consequence.</p>
+  <div class="book-quote">"Deep Work is the ability to focus without distraction on a cognitively demanding task." — Cal Newport</div>
+  <p class="book-p">Deep work ke liye tujhe ek <strong>ritual</strong> chahiye — ek consistent protocol jab tum deep work session start karte ho. Newport several "depth philosophies" describe karte hain:</p>
+  <p class="book-p"><strong>Monastic Philosophy</strong>: sab distractions permanently eliminate karo. Extreme — but some people choose this. No social media, ever. Dedicated to craft only.</p>
+  <p class="book-p"><strong>Bimodal Philosophy</strong>: divide time clearly — deep work time aur shallow work time. Maybe mornings are deep, afternoons are meetings and email.</p>
+  <p class="book-p"><strong>Rhythmic Philosophy</strong>: most practical for students — fixed time block every day for deep work. 6 AM to 9 AM, every single day, deep work. No exceptions. Build the rhythm, and the focus follows.</p>
+  <p class="book-p">Start with just 90 minutes of true deep work daily. Phone off. Notifications off. One task. No multitasking. 90 minutes of this will produce more than most people produce in a full distracted workday. That's the power differential we're talking about.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter IV</span>
+  <h2 class="chapter-heading">Building Your Focus System — Step By Step</h2>
+  <p class="book-p">Yaar, willpower alone doesn't work. Willpower is a finite resource that depletes throughout the day. If you rely on willpower to stay focused, you'll always struggle. Instead — build a system. Systems work when willpower doesn't.</p>
+  <p class="book-p"><strong>Step 1: Time Blocking.</strong> Every Sunday, plan your entire week in time blocks. Not just tasks — time blocks. "9-11 AM: Python study." "11-11:30: email." "2-4 PM: networking notes." When your calendar is filled with intentional blocks, decision fatigue drops and productive hours rise dramatically.</p>
+  <p class="book-p"><strong>Step 2: The MIT Method.</strong> Every morning, identify your 3 Most Important Tasks. These 3 tasks — if completed — mean today was successful regardless of anything else. Start your day with the hardest MIT first, before checking anything. This is Brian Tracy's "Eat the Frog" principle — tackle the most challenging thing when your cognitive resources are freshest.</p>
+  <div class="book-quote">"The secret to getting ahead is getting started. The secret of getting started is breaking your complex tasks into small manageable tasks." — Mark Twain</div>
+  <p class="book-p"><strong>Step 3: Pomodoro Technique — Modified.</strong> Standard Pomodoro is 25 min work, 5 min break. For deep cognitive work, I recommend 50 min work, 10 min break. During the break: walk, stretch, water — no phone. Your brain consolidates learning during these breaks. Don't waste them on scrolling.</p>
+  <p class="book-p"><strong>Step 4: Focus Anchor.</strong> Have a specific song, scent, or physical ritual that you only do before deep work. Brain learns: "this cue = focus mode." Over time, the ritual itself triggers the focused state almost immediately. I use the same instrumental music every session. Within 2 minutes of starting, brain is in work mode. Pavlovian conditioning — but self-directed.</p>
+  <p class="book-p"><strong>Step 5: Weekly Review.</strong> Every Sunday, 30 minutes. What worked? What didn't? What wasted time? What should I do differently? This self-audit is how the system improves continuously. Without review, you keep repeating the same mistakes.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter V</span>
+  <h2 class="chapter-heading">Study Habits That Actually Work</h2>
+  <p class="book-p">Ek student se ek baar baat hui. Woh roz 8 ghante padhta tha. Phir bhi fail ho jaata tha. Dusra student 4 ghante padhta tha — excellent grades. Farq kya tha? Technique.</p>
+  <p class="book-p">Most students use study techniques that feel productive but have very low actual effectiveness. Highlighting, re-reading, listening to notes — yeh sab "illusion of competence" create karte hain. Tum familiar feel karte ho material se, but familiarity is not mastery.</p>
+  <p class="book-p">Science-backed effective techniques:</p>
+  <p class="book-p"><strong>Active Recall / Retrieval Practice.</strong> Instead of re-reading notes, close them. Try to recall everything from memory. Write it down. Check against notes. This struggle to retrieve — even when you fail and have to look it up — encodes memory FAR more deeply than passive re-reading. Flashcards (Anki app) use this principle. This single habit can transform your academic performance.</p>
+  <p class="book-p"><strong>Spaced Repetition.</strong> Instead of studying topic once for 4 hours (massed practice), study for 1 hour today, 30 minutes in 3 days, 20 minutes in a week. Spaced practice with increasing intervals is proven to dramatically improve long-term retention. This is why Anki is so powerful — it automatically calculates optimal review intervals.</p>
+  <div class="book-quote">"Learning is not attained by chance, it must be sought for with ardor and attended to with diligence." — Abigail Adams</div>
+  <p class="book-p"><strong>The Feynman Technique.</strong> Take any concept. Explain it in simple language as if you're teaching a 12-year-old. Where you stumble — where you can't explain it simply — that's where you don't actually understand it. Go back, fill that gap. Repeat until you can explain the whole concept simply. Richard Feynman, Nobel Prize physicist, used this. It works.</p>
+  <p class="book-p"><strong>Interleaved Practice.</strong> Instead of studying one subject for 3 hours, interleave subjects — 1 hour Physics, 1 hour Chemistry, 1 hour Math. This feels harder (it is harder), but produces better retention and problem-solving flexibility. Your brain is forced to retrieve the right approach for each problem type rather than just pattern-matching within one context.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter VI</span>
+  <h2 class="chapter-heading">Environment Design — Your Space Is Your Mind</h2>
+  <p class="book-p">Yeh chapter shayad sabse underrated hai pure book mein. Kyunki bahut se log koshish karte hain willpower se apni habits change karne ki, jabki ek better approach hai — environment change karo. Environment design is the most effective behavior change strategy that most people never use consciously.</p>
+  <p class="book-p">James Clear "Atomic Habits" mein likha: environment is the invisible hand that shapes human behavior. Woh environment jisme tum ho — uski friction, uski cues, uski defaults — sab kuch affect karte hain tumhara behavior without tum realizing.</p>
+  <div class="book-quote">"Your environment is the invisible hand that shapes your behavior. Design it wisely."</div>
+  <p class="book-p">Study environment ke liye: <strong>designated space</strong> sirf study ke liye. Woh space sirf study ka cue ban jaata hai. Agar tu bed pe padhta hai, brain confuse hota hai — yeh zone sleep hai ya study? Ek dedicated desk, chair, lamp — yeh space = work mode.</p>
+  <p class="book-p">Remove friction from good habits, add friction to bad ones. Example: books ko desk pe rakho (low friction to pick up). Phone ko doosre room mein charge karo (high friction to access). Water bottle desk pe rakho. Junk food sight se hatao. Yeh simple environmental tweaks automatically change behavior — without relying on willpower at all.</p>
+  <p class="book-p">Lighting matters: bright, cool-toned light (daylight bulbs) increases alertness and focus. Dim, warm lighting is for relaxation. Study area mein bright light essential hai. Sound: many people focus better with ambient sounds — brown noise, lo-fi music, cafe sounds. Find your preference and standardize it. Temperature: slightly cool room (around 20-22°C) promotes alertness. Too warm = drowsy.</p>
+  <p class="book-p">Digital environment also matters. Browser homepage — replace with a productivity dashboard, not social media. Bookmark bar — have learning resources, not entertainment. Default apps matter. What you see when you open your phone first — that's your digital environment. Design it intentionally.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter VII</span>
+  <h2 class="chapter-heading">Sleep — The Most Neglected Performance Tool</h2>
+  <p class="book-p">Yaar, ek hard truth: agar tu 6 ghante ya kam so raha hai raat ko, aur soch raha hai ki tu full cognitive performance pe hai — tu wrong hai. Matthew Walker, sleep scientist aur author of "Why We Sleep," says: "Sleeping less than 7 hours a night produces significant cognitive impairment — in attention, memory, decision-making, creativity, and emotional regulation." And critically — most sleep-deprived people don't feel as impaired as they actually are. They've adapted to their diminished state and believe it's normal.</p>
+  <p class="book-p">Sleep ke dauran brain kya karta hai? Memory consolidation — jo tum din bhar seekhte ho, woh sleep mein long-term memory mein transfer hota hai. Emotional processing — difficult emotions raat ko "processed" hoti hain, isliye "sleep on it" genuinely works. Toxin removal — brain's glymphatic system during deep sleep removes toxic waste products including those linked to Alzheimer's. Growth hormone release — the majority of tissue repair and growth happens during sleep.</p>
+  <div class="book-quote">"Sleep is the single most effective thing we can do to reset our brain and body health each day." — Matthew Walker</div>
+  <p class="book-p">Practical sleep optimization: <strong>consistent sleep-wake times</strong> — even weekends. Circadian rhythm is sensitive to consistency. Irregular schedule = poor sleep quality. <strong>No screens 1 hour before bed</strong> — blue light suppresses melatonin by up to 3 hours. Use night mode or stop entirely. <strong>Room dark, cool, quiet.</strong> Darkness triggers melatonin. Cool temperature (18-20°C) optimal for sleep. Quiet or consistent white/brown noise. <strong>No caffeine after 2 PM.</strong> Caffeine half-life is 5-6 hours — 3 PM coffee = half still in system at 9 PM. This destroys deep sleep quality even if you fall asleep fine.</p>
+  <p class="book-p">Nap strategy: 20-minute naps (before entering deep sleep) are rejuvenating. 90-minute naps complete one sleep cycle and leave you refreshed. Anything in between leaves you groggy (sleep inertia). If you nap — use a timer.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter VIII</span>
+  <h2 class="chapter-heading">Nutrition & Brain Performance</h2>
+  <p class="book-p">Tu jo khaata hai woh direct impact karta hai teri cognitive performance pe. Yeh "healthy eating is good" generic advice nahi hai — yeh specific neuroscience hai.</p>
+  <p class="book-p"><strong>Glucose management:</strong> brain primarily runs on glucose. But big glucose spikes — junk food, refined carbs, sugary drinks — cause a spike followed by a crash. That "2 PM slump" after lunch? Blood sugar crash. Solution: low-glycemic foods, fiber, protein alongside carbs. Stable blood sugar = stable focus. Think oats over cornflakes, whole grain over white, nuts over chips.</p>
+  <p class="book-p"><strong>Omega-3 fatty acids:</strong> found in fatty fish, walnuts, flaxseeds — directly support brain structure and function. Deficiency linked to brain fog, depression, poor memory. If diet is poor in these, supplementation is worth considering.</p>
+  <div class="book-quote">"Let food be thy medicine and medicine be thy food." — Hippocrates</div>
+  <p class="book-p"><strong>Hydration:</strong> even 2% dehydration causes measurable cognitive decline. Most people are chronically mildly dehydrated. Simple fix: keep water at desk always. Aim for 2-3 liters daily. If urine is dark yellow — you're dehydrated. Pale yellow is goal.</p>
+  <p class="book-p"><strong>Caffeine done right:</strong> don't wake up and immediately have coffee. First 90 minutes after waking, your cortisol is naturally high — coffee during this time actually reduces its effectiveness and builds tolerance faster. Wait 90 minutes post-waking for first coffee. Then use strategically — 45 minutes before a deep work session for maximum effect.</p>
+  <p class="book-p"><strong>Avoid heavy meals before deep work:</strong> large meals send blood flow to digestive system. Cognitive performance drops. Study best on light food, or a few hours after a full meal.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter IX</span>
+  <h2 class="chapter-heading">Digital Minimalism — Less Is Actually More</h2>
+  <p class="book-p">Cal Newport ne ek term diya: <strong>Digital Minimalism</strong> — "a philosophy of technology use in which you focus your online time on a small number of carefully selected and optimized activities that strongly support things you value, and then happily miss out on everything else."</p>
+  <p class="book-p">Yeh sabse liberating concept hai jo main tujhe de sakta hoon. Tujhe every app, every platform, every group, every notification pe available rehne ki zaroorat nahi hai. Sach mein nahi. Jo cheez tujhe actual value deti hai — wo rakho. Jo sirf time consume karti hai without real return — let it go.</p>
+  <div class="book-quote">"The less I needed, the better I felt." — Charles Bukowski</div>
+  <p class="book-p">Newport's 30-day Digital Declutter: For 30 days, eliminate all optional technologies. Then, after 30 days, thoughtfully reintroduce only what you genuinely miss and that provides real value. Most people discover they miss far less than expected. And what they reintroduce, they use with intention, not compulsion.</p>
+  <p class="book-p">Create a personal technology philosophy document. Literally write: "I use technology to _____. I do not use technology for _____." Having explicit rules removes daily decision fatigue. Your relationship with technology becomes intentional rather than reactive.</p>
+  <p class="book-p">Solitude is a core component of digital minimalism. Newport advocates for what he calls "solitude deprivation" as one of the biggest crises of our time — we're never alone with our thoughts. Reclaim solitude. Walk without earphones. Sit without your phone. Let your mind wander. This is not wasted time. This is brain maintenance.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">Chapter X</span>
+  <h2 class="chapter-heading">How To Focus 8+ Hours — The Full Protocol</h2>
+  <p class="book-p">Yeh chapter practical hai. Mera actual protocol hai 8+ hour focus sessions ke liye. Isko directly implement kar. Modify karo based on your life. But start close to this and iterate.</p>
+  <p class="book-p"><strong>Night Before:</strong> Plan next day in detail. Write 3 MITs. Prepare workspace — clean desk, materials ready, water bottle filled. Set phone to DND from 10 PM onwards. Sleep by 10-10:30 PM minimum.</p>
+  <p class="book-p"><strong>Morning (6:00 AM):</strong> No phone for 2 hours. Hydrate immediately — 500ml water. Light exercise — even 15 minutes walk activates BDNF (brain-derived neurotrophic factor) which literally makes neurons grow better. Cold shower — increases norepinephrine by 200-300%, alertness spikes. Light breakfast. No heavy carbs.</p>
+  <div class="book-quote">"The morning routine is the foundation upon which the entire productive day is built."</div>
+  <p class="book-p"><strong>Deep Work Block 1 (8:00-10:30 AM):</strong> Hardest MIT first. Phone off, in different room. One tab. Instrumental music or silence. 90 minute block, then 15 minute break (walk, stretch, no screen). Another 60 minute block. This 2.5 hours will produce your highest-quality work of the day.</p>
+  <p class="book-p"><strong>Mid Morning (11:00 AM):</strong> Check messages once. Handle only urgent items. 20-minute slot maximum. Do not get sucked in.</p>
+  <p class="book-p"><strong>Deep Work Block 2 (11:30 AM - 1:30 PM):</strong> Second MIT or same continued. Same protocol. 2 hours.</p>
+  <p class="book-p"><strong>Lunch (1:30-2:30 PM):</strong> Real break. Go outside if possible. Light meal. No screens during eating — savor the food, rest the mind.</p>
+  <p class="book-p"><strong>Post-Lunch (2:30-3:00 PM):</strong> This is naturally the brain's lowest alertness point. Use for low-cognitive tasks: reviewing notes, organizing, administrative work, reading less demanding material. If extreme drowsiness — 20 minute nap. No more.</p>
+  <p class="book-p"><strong>Deep Work Block 3 (3:00-5:00 PM):</strong> Third MIT or review/practice. Alertness naturally rises again in late afternoon. Use this second wind. 2 hours.</p>
+  <p class="book-p"><strong>Review Block (5:00-6:00 PM):</strong> Consolidate day's learning. Active recall on everything studied. Update progress. Plan tomorrow's schedule.</p>
+  <p class="book-p"><strong>Evening:</strong> Protected rest time. Real conversations. Light reading. Physical activity. No work after 7 PM ideally — brain needs true downtime to consolidate and recover.</p>
+  <p class="book-p">That is 6-7 hours of deep work in a single day. Done consistently, week after week, month after month — the compound effect of this is staggering. A year from now, you'll look back and barely recognize yourself. Start tomorrow.</p>
+  <p class="book-p" style="text-align:center;font-style:italic;margin-top:40px;">— AAREX</p>
+</div>
+`,
+  3: `
+<div class="book-title-page">
+  <div class="book-main-title">The Ethical Hacker<br>Journey</div>
+  <div class="book-author">// by AAREX</div>
+</div>
+<div class="toc" style="font-family:'Share Tech Mono';font-size:0.85rem;">
+  <div class="toc-title" style="color:var(--green);letter-spacing:0.2em;"># TABLE OF CONTENTS</div>
+  <div class="toc-item"><span>00. My Story — How It Started</span><span>0x00</span></div>
+  <div class="toc-item"><span>01. Why Cybersecurity Matters</span><span>0x01</span></div>
+  <div class="toc-item"><span>02. Linux Roadmap</span><span>0x02</span></div>
+  <div class="toc-item"><span>03. Networking Roadmap</span><span>0x03</span></div>
+  <div class="toc-item"><span>04. Programming Roadmap</span><span>0x04</span></div>
+  <div class="toc-item"><span>05. Web Security Roadmap</span><span>0x05</span></div>
+  <div class="toc-item"><span>06. CTF Roadmap</span><span>0x06</span></div>
+  <div class="toc-item"><span>07. Bug Bounty Roadmap</span><span>0x07</span></div>
+  <div class="toc-item"><span>08. Building Projects</span><span>0x08</span></div>
+  <div class="toc-item"><span>09. Creating A Portfolio</span><span>0x09</span></div>
+  <div class="toc-item"><span>0A. Freelancing & Remote Work</span><span>0x0A</span></div>
+  <div class="toc-item"><span>0B. Long-Term Career</span><span>0x0B</span></div>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x00</span>
+  <h2 class="chapter-heading">MY STORY — HOW IT STARTED</h2>
+  <p class="book-p">Bhai, seedha shuru karta hoon. Main koi IIT wala nahi hoon. Koi privileged background nahi. Ek normal student — confused, internet pe random cheezein dekhta tha, ek din ek video dekhi jisme ek banda Linux terminal pe kuch kar raha tha. Woh black screen, white text, fast commands — kuch aisa tha jo genuinely exciting laga.</p>
+  <p class="book-p">Pehle kuch mahine bakwaas tha. Sab kuch "hack" karna chahta tha — without understanding anything. YouTube pe "hacking tutorials" dekhta tha — mostly fake, mostly useless. Phir ek din kisi ne bola — "pehle networking seekh. pehle Linux seekh. phir sab kuch aata hai." Woh advice life changing thi.</p>
+  <div class="book-quote">// "The hacker mindset doesn't actually see these different categories. The hacker sees: understand the system deeply, then find where it diverges from intended behavior."</div>
+  <p class="book-p">Toh main ne fundamentals se shuru kiya. Boring lagta tha pehle — OSI model, TCP handshake, file permissions. Lekin ek din jab pehli baar maine ek CTF challenge solve kiya — buffer overflow ka ek basic wala — woh feeling koi bhi luxury nahi de sakti. "Main ne actually kiya yeh."</p>
+  <p class="book-p">Aaj yeh kitaab isliye likh raha hoon — taaki jo confusion maine face ki, woh tujhe na ho. Yeh mera dil se likha roadmap hai. Use it well.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x01</span>
+  <h2 class="chapter-heading">WHY CYBERSECURITY MATTERS</h2>
+  <p class="book-p">2023 mein global cybercrime cost: $8 trillion. 2025 mein projected: $10.5 trillion. Yeh GDP of most countries se bada number hai. Har 39 seconds mein ek cyberattack hota hai duniya mein kahin na kahin. Healthcare, banking, infrastructure, government — sab vulnerable hain.</p>
+  <p class="book-p">Aur who protects these? Ethical hackers. Security researchers. People who understand how attacks work — and use that knowledge defensively. Tum uss field mein jaana chahte ho — yeh noble hai. Genuinely noble. Tum duniya ko actually safer bana sakte ho.</p>
+  <div class="book-quote">// "The only way to defend is to understand how to attack."</div>
+  <p class="book-p">Career perspective se: cybersecurity is one of the most in-demand fields globally with a massive talent shortage. 3.5 million unfilled cybersecurity positions worldwide projected through 2025. Salaries are exceptional even at entry level. Remote work is common. Location doesn't matter much — skill does. This is one of the most accessible high-paying careers for someone building from scratch.</p>
+  <p class="book-p">But beyond career — jo attitude chahiye ethical hacker banne ke liye — curiosity, persistence, systems thinking, continuous learning — woh same attitude makes you exceptional at almost everything else too. Ethical hacking trains you to think differently. That cognitive upgrade is worth the journey alone.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x02</span>
+  <h2 class="chapter-heading">LINUX ROADMAP — YOUR FOUNDATION</h2>
+  <div class="term-prompt" style="color:var(--green);">$ whoami</div>
+  <div class="term-prompt" style="color:var(--green);">$ root</div>
+  <p class="book-p">Linux is not optional in cybersecurity. Almost every security tool, framework, and environment runs on Linux. Kali Linux specifically is built for penetration testing — pre-installed with 600+ security tools. Start here.</p>
+  <p class="book-p"><strong>Phase 1 — Basic Survival (Week 1-2):</strong> Install VirtualBox, install Kali Linux as VM. Learn: file system structure (/, /home, /etc, /var, /tmp), basic commands (ls, cd, pwd, cat, grep, find, chmod, chown, mv, cp, rm), text editors (nano basics, vim basics), bash variables and basic scripting.</p>
+  <p class="book-p"><strong>Phase 2 — Deeper Control (Week 3-4):</strong> Process management (ps, top, kill, &, nohup), networking commands (ifconfig/ip, ping, traceroute, netstat, ss, nmap), package management (apt-get, pip, snap), file permissions deeply (octal notation, setuid/setgid, sticky bit), cron jobs and scheduling, SSH — connect to remote machines.</p>
+  <div class="book-quote">// "In Linux, everything is a file. Master files, master Linux."</div>
+  <p class="book-p"><strong>Phase 3 — Scripting Power (Week 5-8):</strong> Bash scripting seriously. Variables, loops, conditionals, functions, arguments. Write: a network scanner script, a password brute force script (ethical only), a log parser, an automated recon tool. These scripts cement your command knowledge AND produce actual useful tools.</p>
+  <p class="book-p"><strong>Resources:</strong> OverTheWire: Bandit wargame (best Linux practice by far), LinuxCommand.org (free comprehensive guide), "The Linux Command Line" book by William Shotts, TryHackMe Linux fundamentals path.</p>
+  <p class="book-p">Timeline: 2 months dedicated to Linux fundamentals before moving forward. Don't rush this. The stronger your Linux foundation, the faster everything else goes.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x03</span>
+  <h2 class="chapter-heading">NETWORKING ROADMAP — THE LANGUAGE OF HACKING</h2>
+  <p class="book-p">Every attack travels through a network. Every defense watches the network. Without networking, you're hacking blind.</p>
+  <p class="book-p"><strong>Core Concepts to Master:</strong></p>
+  <p class="book-p">OSI Model — all 7 layers, what happens at each, why it matters for attacks (knowing which layer an attack targets tells you how to defend). TCP/IP — the actual internet protocol stack. Three-way handshake deeply. Why this matters: SYN flood attacks exploit handshake mechanism. DNS — how names become IPs. Why it matters: DNS hijacking, DNS exfiltration, subdomain enumeration. HTTP/HTTPS — how web traffic works. Request/response cycle, headers, methods. Why it matters: entire web hacking is manipulating HTTP. ARP — address resolution in local networks. Why it matters: ARP spoofing, MITM attacks. Subnetting — IP addressing, CIDR notation. Why it matters: network reconnaissance, understanding target scope.</p>
+  <div class="book-quote">// "Know the network like you built it. Then find where it breaks."</div>
+  <p class="book-p"><strong>Practical Skills:</strong> Wireshark — capture and analyze real traffic. Start with your own network. Filter by protocol. Find credentials in plain HTTP. Understand what normal traffic looks like (anomaly detection starts here). Nmap — the king of network scanners. Basic scan, service version detection, OS detection, scripts (NSE). Netcat — "the Swiss Army knife" of networking. Manual connections, banner grabbing, simple backdoors (for lab use).</p>
+  <p class="book-p"><strong>Resources:</strong> Professor Messer's CompTIA Network+ videos (free, comprehensive). TryHackMe Pre-Security path. Wireshark for beginners on YouTube. "Computer Networking: A Top-Down Approach" textbook (optional, reference only).</p>
+  <p class="book-p"><strong>Lab Setup:</strong> GNS3 or Cisco Packet Tracer for virtual networking. Build your own small network — router, switch, multiple VMs. Attack your own lab. This hands-on practice cannot be replaced.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x04</span>
+  <h2 class="chapter-heading">PROGRAMMING ROADMAP — BUILD YOUR ARSENAL</h2>
+  <p class="book-p">Python pehle. Always. Yeh hacker's language hai. Simple syntax, powerful libraries, excellent for automation, networking, web, exploitation. Learn Python to intermediate level before touching anything else.</p>
+  <p class="book-p"><strong>Python Learning Path:</strong> Basics (variables, data types, control flow, functions, OOP concepts). Then immediately apply to security: socket module — write a port scanner from scratch. requests module — write a web scraper and then a login brute forcer. subprocess module — wrap Linux commands in Python. scapy library — craft custom network packets. Beautiful patterns: always build something security-related while learning. Theory + immediate application = maximum retention.</p>
+  <div class="book-quote">// "A good programmer is someone who always looks both ways before crossing a one-way street."</div>
+  <p class="book-p"><strong>5 Python Tools to Build:</strong> Port Scanner (socket-based), Directory Bruteforcer (wordlist + requests), Subdomain Enumerator (DNS + requests), Hash Cracker (hashlib + wordlist), Basic Keylogger (pynput — for your own machine, education only). These 5 projects will teach you more than months of tutorials.</p>
+  <p class="book-p"><strong>JavaScript — Next:</strong> Not for web development primarily — for understanding client-side vulnerabilities. How XSS works. How DOM manipulation happens. How cookies and localStorage are accessed. Basic JS knowledge unlocks understanding of most web vulnerabilities.</p>
+  <p class="book-p"><strong>Assembly & C — Eventually:</strong> Required for binary exploitation, reverse engineering, malware analysis. Not immediate priority — come to this after 6-12 months of foundational work. But don't skip it forever — these unlock the deepest level of security work.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x05</span>
+  <h2 class="chapter-heading">WEB SECURITY ROADMAP — THE BIGGEST ATTACK SURFACE</h2>
+  <p class="book-p">Web applications are the single largest attack surface in modern computing. Every company has a website. Most are vulnerable. Web security knowledge directly translates to bug bounty earnings and penetration testing work.</p>
+  <p class="book-p"><strong>OWASP Top 10 — Your Bible:</strong> Broken Access Control (IDOR, privilege escalation). Cryptographic Failures (weak hashing, plaintext passwords). Injection (SQL injection, command injection, LDAP injection). Insecure Design. Security Misconfiguration. Vulnerable Components. Authentication Failures. Software Integrity Failures. Logging Failures. SSRF — Server Side Request Forgery.</p>
+  <p class="book-p">Learn each one deeply — not just "what is it" but HOW to find it, HOW to exploit it, HOW to report it, HOW to fix it. This 360° understanding is what separates good security researchers from average ones.</p>
+  <div class="book-quote">// "Break it before someone else does."</div>
+  <p class="book-p"><strong>Burp Suite — Master This Tool:</strong> Burp Suite is the primary web security testing tool. Learn: Proxy (intercept and modify requests), Repeater (manually craft and send requests), Intruder (automated attack tool), Scanner (automated vulnerability detection — Pro only), Decoder (encode/decode data), Sequencer (token randomness analysis). Spend minimum 2 months using Burp Suite daily. It will feel overwhelming at first. It becomes second nature.</p>
+  <p class="book-p"><strong>Practice Labs — In Order:</strong> DVWA (Damn Vulnerable Web Application) — local install, all vulnerabilities exploitable. WebGoat — OWASP's intentionally vulnerable app. PortSwigger Web Security Academy — the best free web security training available anywhere. HackTheBox Web challenges. Real bug bounty programs — when ready.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x06</span>
+  <h2 class="chapter-heading">CTF ROADMAP — SHARPEN YOUR BLADES</h2>
+  <p class="book-p">Capture The Flag competitions are the ultimate training ground. Real challenges, real skills, real results. Tum TryHackMe ya HackTheBox pe ek machine exploit karte ho — woh satisfaction real hai. Woh skill real hai. Woh resume pe real hain.</p>
+  <p class="book-p"><strong>CTF Categories to learn:</strong></p>
+  <p class="book-p"><strong>Web:</strong> SQL injection, XSS, IDOR, authentication bypass, file upload exploits. Most accessible category to start. Direct application of OWASP knowledge.</p>
+  <p class="book-p"><strong>Forensics:</strong> File analysis, steganography (hidden data in images), log analysis, memory forensics (Volatility tool), network capture analysis (Wireshark). Develop a detective mindset here.</p>
+  <p class="book-p"><strong>Cryptography:</strong> Breaking weak ciphers, understanding encoding vs encryption, RSA attacks, hash cracking. Math-heavy but very learnable. Don't skip — crypto is everywhere in real security.</p>
+  <p class="book-p"><strong>Reverse Engineering:</strong> Analyzing compiled binaries without source code. Tools: Ghidra (free, NSA-built), IDA (industry standard), radare2. Start with simple challenges. This category has the highest ceiling.</p>
+  <div class="book-quote">// "In CTF, you're not cheating if you Google. You're researching. Learn the difference."</div>
+  <p class="book-p"><strong>My CTF Learning Order:</strong> TryHackMe pre-security path → TryHackMe Jr Penetration Tester path → HackTheBox Starting Point machines → PicoCTF (great for beginners) → CTFtime.org events → HackTheBox Pro Labs.</p>
+  <p class="book-p">One critical habit: write CTF writeups. After solving a challenge, write a clear explanation of your approach. This forces deeper understanding, builds a public portfolio, helps the community, and establishes your reputation. Writeup culture is beautiful — the security community shares everything.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x07</span>
+  <h2 class="chapter-heading">BUG BOUNTY ROADMAP — GET PAID TO HACK</h2>
+  <p class="book-p">Bug bounty is where hobby becomes income. Companies pay researchers to find vulnerabilities in their systems before malicious actors do. Ethical, legal, and lucrative when done right.</p>
+  <p class="book-p"><strong>Platforms:</strong> HackerOne (largest, most established), Bugcrowd, Intigriti (EU-based, growing fast), Synack (vetted researchers, higher pay), company-run private programs.</p>
+  <p class="book-p"><strong>Before Your First Report:</strong> Complete PortSwigger Web Academy — all labs. 100+ TryHackMe rooms. Read minimum 200 HackerOne disclosed reports. These disclosed reports are pure gold — real vulnerabilities, real methodologies, real impact explanations. Read them obsessively.</p>
+  <div class="book-quote">// "Read 200 disclosed reports before writing your first report." — standard advice that actually works</div>
+  <p class="book-p"><strong>Your First Program — Private, New:</strong> Don't start on Google or Facebook. Start on a private program with newer companies — less researchers means less competition for the same vulnerabilities. Look for programs with active scopes, responsive security teams, and fair bounties.</p>
+  <p class="book-p"><strong>Recon is Everything:</strong> Subdomain enumeration (subfinder, amass, assetfinder). Content discovery (ffuf, gobuster, dirsearch). Port scanning all discovered assets (masscan, nmap). JavaScript file analysis (find endpoints, API keys, sensitive data). Wayback Machine for old endpoints. The more thorough your recon, the more attack surface you find, the more bugs you find.</p>
+  <p class="book-p"><strong>Writing Good Reports:</strong> Clear title describing the vulnerability. Severity assessment with justification. Step-by-step reproduction steps (exact, reproducible). Impact description (what can an attacker do? what data is at risk?). Suggested fix. Include screenshots and HTTP request/response. A well-written report gets triaged faster, bounties paid quicker, and reputation built stronger.</p>
+  <p class="book-p">Income reality: first year, don't expect much. It's mostly learning. Year 2-3, consistent $500-2000/month possible for diligent researchers. Top researchers make $200,000+/year. The compound growth in skills + reputation is what drives the income curve.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x08</span>
+  <h2 class="chapter-heading">BUILDING PROJECTS — SHOW DON'T TELL</h2>
+  <p class="book-p">Certificates are nice. Projects are better. Working tools that people actually use — that's what separates good resumes from great ones. Build things. Real things. Useful things.</p>
+  <p class="book-p"><strong>Beginner Projects:</strong> Port scanner with service detection (Python/socket). Subdomain enumerator (Python/requests/DNS). Password strength checker. Hash identifier and cracker. Simple keylogger (for own device, educational). Basic vulnerability scanner for common misconfigurations.</p>
+  <p class="book-p"><strong>Intermediate Projects:</strong> Full recon automation tool. OSINT data aggregator. Simple network packet sniffer. Web crawler for link discovery. API key scanner in GitHub repositories (legal, educational). CTF challenge solution scripts.</p>
+  <p class="book-p"><strong>Advanced Projects:</strong> Custom exploit for a known CVE (in isolated lab). Malware sample analysis environment. Honeypot system. Threat intelligence feed aggregator. Browser extension for security testing.</p>
+  <div class="book-quote">// "Build something. Deploy it. Show the world." — every senior security engineer ever</div>
+  <p class="book-p">Every project goes on GitHub. Every GitHub commit is visible proof of work. When a recruiter or bounty program sees 50 well-documented security projects in your GitHub, you don't need to prove yourself with words. The work speaks.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x09</span>
+  <h2 class="chapter-heading">CREATING A PORTFOLIO — YOUR DIGITAL IDENTITY</h2>
+  <p class="book-p">In cybersecurity, your online reputation is your currency. Build it deliberately, consistently, and honestly.</p>
+  <p class="book-p"><strong>GitHub Profile:</strong> Pin your best repositories. Write excellent READMEs for every project — what it does, how to use it, what you learned. Contribute to open source security tools — PRs on Metasploit, Nmap scripts, SecLists. Consistent commits — even small ones — show active development.</p>
+  <p class="book-p"><strong>Blog / Website:</strong> Write CTF writeups. Write learning notes. Write about your journey. Doesn't need to be polished — honest and detailed is what matters. Security blog readership is built fast because the community is hungry for good writeups. Even beginner writeups are valuable — you explain things in a way an expert wouldn't, and it helps other beginners.</p>
+  <div class="book-quote">// "Document everything. Your future self will thank you. So will your recruiter."</div>
+  <p class="book-p"><strong>Twitter/X + LinkedIn:</strong> Follow security researchers. Engage with their content thoughtfully — not just "great post!" but actually add something. Share your own findings, writeups, projects. Security Twitter is one of the most active communities online. Being visible there has directly led to job offers and collaboration for many researchers.</p>
+  <p class="book-p"><strong>HackerOne/Bugcrowd Hall of Fame:</strong> Even P4 (low severity) bug reports that are accepted go on your profile. A HackerOne profile with 20 accepted reports tells a story. Build it steadily over time.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x0A</span>
+  <h2 class="chapter-heading">FREELANCING & REMOTE WORK</h2>
+  <p class="book-p">Ethical hacking aur cybersecurity consulting — dono fields mein freelancing exceptionally viable hai. Companies need penetration testing but can't always afford full-time security engineers. Enter: freelance ethical hackers.</p>
+  <p class="book-p"><strong>Getting First Clients:</strong> Start with small businesses — they have the most security gaps and least budget for enterprise solutions. Local businesses, startups, small e-commerce sites. Offer a free initial vulnerability assessment. Find real issues. Show them the report. Discuss remediation. That conversation often converts to paid work.</p>
+  <p class="book-p"><strong>Platforms:</strong> Upwork (large freelance platform, good security section), Fiverr (high-volume, lower rates, good for early reputation), Toptal (high-end, requires vetting, excellent rates), direct LinkedIn outreach, referrals from existing clients.</p>
+  <div class="book-quote">// "Your first client pays you money. Your first 5 clients pay you reputation. After that, reputation pays you everything."</div>
+  <p class="book-p"><strong>Pricing:</strong> Entry level penetration testing: ₹15,000-50,000 per engagement. Mid-level: ₹50,000-2,00,000. Senior: ₹2,00,000+. Western market rates are 5-10x higher if you can service international clients — which remote work enables completely.</p>
+  <p class="book-p"><strong>Remote Work at Companies:</strong> Many cybersecurity roles — SOC analyst, threat intelligence, bug bounty specialist, security researcher — are fully remote. Upwork, RemoteOK, We Work Remotely, LinkedIn Remote filter. Location becomes irrelevant. A student in Bhilwara can earn the same as one in Bangalore if the skill matches. This is the great equalizer.</p>
+</div>
+
+<div class="book-chapter">
+  <span class="chapter-num">// 0x0B</span>
+  <h2 class="chapter-heading">LONG-TERM CAREER — THE BIGGER PICTURE</h2>
+  <p class="book-p">Yaar, 10 saal ka picture dekh. Yeh exciting hai, I promise.</p>
+  <p class="book-p"><strong>Year 0-1:</strong> Fundamentals. Linux, Networking, Python, Web Security basics. 50 TryHackMe rooms. First CTF competition. GitHub portfolio started. Zero income but maximum learning.</p>
+  <p class="book-p"><strong>Year 1-2:</strong> First bug bounty reports. 100+ CTF rooms. 5 solid GitHub projects. First freelance clients. eJPT or CompTIA Security+ certification. Part-time income begins.</p>
+  <p class="book-p"><strong>Year 2-3:</strong> OSCP certification (most respected in industry). Active bug bounty income. Consistent freelance work. Security blog growing. Job applications begin for junior roles. India: ₹6-12 LPA entry level. International remote: $40-70k.</p>
+  <div class="book-quote">// "The best time to start was yesterday. The second best time is right now."</div>
+  <p class="book-p"><strong>Year 3-5:</strong> Specialization choice: Red Team | Blue Team | Web App Security | Cloud Security | Malware Analysis | Threat Intelligence. Senior roles: India ₹15-40 LPA. International: $80-150k. Speaker at security conferences. Contributing to open source tools. Building reputation that compounds.</p>
+  <p class="book-p"><strong>Year 5-10:</strong> Expert level. Security consulting. Building your own tools and frameworks. Potentially starting your own security company. Teaching — courses, workshops, bootcamps. Income at this level has no ceiling — skill-based consulting is one of the highest-income professional paths available.</p>
+  <p class="book-p">But bhai — beyond money. The deeper reward: you are genuinely protecting people. Every vulnerability you find and report means one fewer attack vector for bad actors to exploit real people's data, money, and privacy. That impact — that actual good in the world — that's what makes ethical hacking not just a career, but a calling.</p>
+  <p class="book-p">Ek last baat. Tum yeh kitaab pad raha hai — aur woh itself says something about tum. Tu ne ek decision liya — to seek knowledge, to build something, to become something. Respect that decision every single day. The road is long. It has frustrating days, dead ends, imposter syndrome, and moments when you feel like you're not progressing. Every expert felt exactly this. Every single one.</p>
+  <p class="book-p">Keep going. The terminal is waiting for you.</p>
+  <div class="book-quote">// root@AAREX:~# shutdown -h never<br>// Connection: persistent<br>// Status: BUILDING</div>
+  <p class="book-p" style="text-align:center;margin-top:40px;font-family:'Orbitron';font-size:0.8rem;color:var(--green);letter-spacing:0.2em;">— AAREX</p>
+</div>
+`
+};
+
+function openBook(n) {
+  const overlay = document.getElementById('book-overlay');
+  const content = document.getElementById('book-content');
+  const closeBtn = document.getElementById('book-close-btn');
+  overlay.className = '';
+  overlay.classList.add('open', 'book-' + n);
+  content.innerHTML = bookContent[n];
+  overlay.scrollTop = 0;
+  if (n === 3) {
+    closeBtn.textContent = 'EXIT';
+  } else {
+    closeBtn.textContent = '✕';
+  }
+  setTimeout(() => { overlay.classList.add('visible'); }, 10);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBook() {
+  const overlay = document.getElementById('book-overlay');
+  overlay.classList.remove('visible');
+  setTimeout(() => {
+    overlay.classList.remove('open');
+    overlay.className = '';
+    document.body.style.overflow = '';
+  }, 400);
+}
+
+// Close on escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeBook();
+});
+</script>
+</body>
+</html>
